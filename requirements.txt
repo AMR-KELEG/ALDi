@@ -1,3 +1,11 @@
-pandas
+# Model
 datasets
-"transformers[torch]"
+transformers[torch]
+evaluate
+scikit-learn
+
+# Data
+pandas
+editdistance
+tqdm
+xlrd
