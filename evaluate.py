@@ -12,8 +12,8 @@ from sklearn.metrics import confusion_matrix
 from scipy.special import softmax
 
 
-def load_dataset(dialectness_level):
-    BASEDIR = "data/DIA2MSA_mapped/"
+def load_dataset(dialectness_level, DATASET):
+    BASEDIR = f"data/{DATASET}_mapped/"
     DA_file = str(Path(BASEDIR, f"{dialectness_level}_DA.txt"))
     MSA_file = str(Path(BASEDIR, f"{dialectness_level}_MSA.txt"))
 
@@ -54,14 +54,14 @@ def predict(sample):
     return softmax(predictions.logits.cpu().tolist())
 
 
-def main(dialectness_level):
+def main(dialectness_level, DATASET):
     MODEL_NAME = "UBC-NLP/MARBERT"
     model = AutoModelForSequenceClassification.from_pretrained(
         "MARBERT_DI/checkpoint-240/"
     )
     model.cuda()
 
-    eval_dataset = load_dataset(dialectness_level)
+    eval_dataset = load_dataset(dialectness_level, DATASET)
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
     tokenized_samples = eval_dataset.map(
         lambda sample: tokenize_function(sample, tokenizer), batched=True
@@ -92,8 +92,10 @@ def main(dialectness_level):
 
 
 if __name__ == "__main__":
+    DATASET = "MADAR"
+    # DATASET = "DIA2MSA"
     for dialectness_level in ["little", "most"]:
-        dataset = main(dialectness_level)
+        dataset = main(dialectness_level, DATASET)
         df = pd.DataFrame(
             {
                 "text": dataset["text"],
@@ -102,4 +104,4 @@ if __name__ == "__main__":
                 "prediction_score": dataset["prediction_score"],
             }
         )
-        df.to_csv(f"data/output_eval_{dialectness_level}.csv", index=False)
+        df.to_csv(f"data/output_eval_{DATASET}_{dialectness_level}.csv", index=False)
