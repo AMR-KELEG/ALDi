@@ -1,4 +1,3 @@
-import logging
 import evaluate
 import numpy as np
 from finetune_utils import load_dataset
@@ -11,7 +10,6 @@ from transformers import (
 
 
 def tokenize_function(examples, tokenizer):
-    # return tokenizer(examples["text"], padding="max_length", truncation=True)
     return tokenizer(
         examples["text"], padding="max_length", max_length=64, truncation=True
     )

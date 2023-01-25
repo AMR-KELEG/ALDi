@@ -3,7 +3,8 @@ import pandas as pd
 import editdistance
 from tqdm import tqdm
 from pathlib import Path
-from data_preparation_utils import preprocess, preprocess_comparison, dump_file
+from data_preparation_utils import preprocess, normalize_arabic_text, dump_file
+import matplotlib.pyplot as plt
 
 tqdm.pandas()
 
@@ -26,10 +27,19 @@ def main():
     df["EGY_len"] = df["EGY"].apply(lambda s: len(s))
     df["distance"] = df.progress_apply(
         lambda row: editdistance.distance(
-            preprocess_comparison(row["MSA"]), preprocess_comparison(row["EGY"])
+            normalize_arabic_text(row["MSA"]), normalize_arabic_text(row["EGY"])
         ),
         axis=1,
     )
+
+    df["distance"].plot.hist()
+    plt.show()
+
+    df["distance_percentage"] = df.apply(
+        lambda row: row["distance"] / row["EGY_len"], axis=1
+    )
+    df["distance_percentage"].plot.hist(bins=[v for v in range(0, 2, 0.25)])
+    plt.show()
 
     little_df = df[(df["distance"] >= 5) & (df["distance"] <= 15)].sample(
         n=200, random_state=42
