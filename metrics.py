@@ -4,6 +4,10 @@ from abc import ABC, abstractmethod
 from typing import Any
 import utils
 import editdistance
+import pickle
+
+# TODO: Transform this into a package
+from form_msa_lexicon import tokenize_text
 
 
 class DialectnessLevelMetric(ABC):
@@ -112,3 +116,17 @@ class BackTranslationMetric(DialectnessLevelMetric):
         ]
 
         return max(distances)
+
+with open("data/MSA_raw_corpora/lexicon.pkl", "rb") as f:
+    LEXICON = pickle.load(f)
+
+
+def compute_percentage_of_msa_tokens(text):
+    """Compute the percentage of tokens that can be found in an MSA lexicon."""
+    tokens = tokenize_text(text)
+    return len([t for t in tokens if t in LEXICON]) / len(tokens)
+
+
+if __name__ == "__main__":
+    text = input("Enter an Arabic sentence:\n")
+    print(compute_percentage_of_msa_tokens(text))
