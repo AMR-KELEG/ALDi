@@ -6,8 +6,7 @@ import utils
 import editdistance
 import pickle
 
-# TODO: Transform this into a package
-from form_msa_lexicon import tokenize_text
+from utils import tokenize_text
 
 
 class DialectnessLevelMetric(ABC):
@@ -117,16 +116,35 @@ class BackTranslationMetric(DialectnessLevelMetric):
 
         return max(distances)
 
-with open("data/MSA_raw_corpora/lexicon.pkl", "rb") as f:
-    LEXICON = pickle.load(f)
+
+def load_lexicons():
+    # Load the lexicon files to memory
+    with open("data/MSA_raw_corpora/lexicon_UN.pkl", "rb") as f:
+        UN_LEXICON = pickle.load(f)
+
+    with open("data/MSA_raw_corpora/lexicon_opensubtitles.pkl", "rb") as f:
+        OPENSUBTITLES_LEXICON = pickle.load(f)
+
+    return UN_LEXICON, OPENSUBTITLES_LEXICON
 
 
-def compute_percentage_of_msa_tokens(text):
+def compute_percentage_of_msa_tokens(text, LEXICON):
     """Compute the percentage of tokens that can be found in an MSA lexicon."""
+
     tokens = tokenize_text(text)
-    return len([t for t in tokens if t in LEXICON]) / len(tokens)
+
+    # TODO: This filtering should be done on building the LEXICON
+    # Ignore words occuring once
+    return 1 - (
+        len([t for t in tokens if t in LEXICON and LEXICON[t] > 1]) / len(tokens)
+    )
 
 
 if __name__ == "__main__":
+    UN_LEXICON, OPENSUBTITLES_LEXICON = load_lexicons()
     text = input("Enter an Arabic sentence:\n")
-    print(compute_percentage_of_msa_tokens(text))
+
+    print("UN:", compute_percentage_of_msa_tokens(text, UN_LEXICON))
+    print(
+        "OpenSubtitles:", compute_percentage_of_msa_tokens(text, OPENSUBTITLES_LEXICON)
+    )

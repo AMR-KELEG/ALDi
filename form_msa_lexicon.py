@@ -6,6 +6,7 @@ from tqdm import tqdm
 from pathlib import Path
 from bs4 import BeautifulSoup
 from collections import Counter
+from utils import tokenize_text
 
 OUTPUT_TXT_DIR = "data/MSA_raw_corpora/OpenSubtitles/parsed"
 
@@ -49,40 +50,6 @@ def load_txt_file(filename):
         return [l.strip() for l in f if l.strip()]
 
 
-## Tokenizer ##
-PATTERNS = [
-    # Split whitespaces
-    r"(\s)",
-    # Split numerals
-    r"([0-9\u0660-\u0669]+[.]?[0-9\u0660-\u0669]*)",
-    # Split . as long as it's not surrounded by numerals
-    r"(?![0-9\u0660-\u0669])([.])(?![0-9\u0660-\u0669])",
-    # Split text emojis
-    r"([:;]-?\S\b)",
-    # Split Non-arabic punctuation marks
-    # TODO: ":" breaks the text emojis
-    r"([!\"#$%&'()*+,-./:;<=>?@[\\\]^_`{\|}~])",
-    # Split Arabic punctuation marks
-    r"([؛،؟٬٪])",
-    # Split Quranic punctuation marks
-    r"([٭۞۩ﷺ])",
-]
-
-
-def tokenize_text(text):
-    """Tokenize a string based on separator regexps."""
-    tokens = [text]
-
-    for splitting_pattern in PATTERNS:
-        tokens = [
-            sub_token
-            for token in tokens
-            for sub_token in re.split(splitting_pattern, token)
-            if token
-        ]
-    return [t for t in tokens if t.strip()]
-
-
 def form_lexicon(corpus):
     """Tokenize a corpus of sentences."""
     tokens = [
@@ -92,6 +59,12 @@ def form_lexicon(corpus):
         for tlist in tokenize_text(sentence)
     ]
     return Counter(tokens)
+
+
+def form_un_lexicon(filename):
+    with open(filename, "r") as f:
+        tokens = [tlist for sentence in tqdm(f) for tlist in tokenize_text(sentence)]
+        return Counter(tokens)
 
 
 def parse_opensubtitles_xml_to_txt():
@@ -113,14 +86,27 @@ def parse_opensubtitles_xml_to_txt():
         transform_xml_to_txt(filename, output_filename)
 
 
-def generate_lexicon():
-    subtitles_corpus = [
-        load_txt_file(f) for f in tqdm(Path(OUTPUT_TXT_DIR).glob("*.txt"))
-    ]
+def generate_lexicon(open_subtitles=False, un=False):
 
-    LEXICON = form_lexicon(subtitles_corpus)
+    if open_subtitles:
+        file_paths = (
+            Path(OUTPUT_TXT_DIR).glob("*.txt")
+            if open_subtitles
+            else Path("data/MSA_raw_corpora/").glob("UN-en-ar/UNv1.0.ar-en.ar")
+            if un
+            else []
+        )
 
-    with open("data/MSA_raw_corpora/lexicon.pkl", "wb") as outputfile:
+        subtitles_corpus = [load_txt_file(f) for f in tqdm(file_paths)]
+
+        LEXICON = form_lexicon(subtitles_corpus)
+
+    elif un:
+        LEXICON = form_un_lexicon("data/MSA_raw_corpora/UN-en-ar/UNv1.0.ar-en.ar")
+
+    with open(
+        f"data/MSA_raw_corpora/lexicon_{'UN' if un else 'opensubtitles'}.pkl", "wb"
+    ) as outputfile:
         pickle.dump(LEXICON, outputfile)
 
 
@@ -131,20 +117,31 @@ def main():
     parser.add_argument(
         "-g",
         "--generate_txt_files",
+        action="store_true",
         help="Genreate txt files from the Opensubtitles xml files.",
     )
-    parser.add_argument(
-        "-f",
-        "--form_lexicon",
-        help="Form a Lexicon Counter object from the Opensubtitles txt files.",
+
+    subparsers = parser.add_subparsers(help="Form lexicon file.")
+
+    lexicon_generation_subparser = subparsers.add_parser(
+        "form_lexicon",
+        help="Form a Lexicon Counter object from corpus txt files.",
+    )
+    lexicon_generation_subparser.add_argument(
+        "-c",
+        choices=["UN", "OpenSubtitles"],
+        required=True,
+        help="Select only one corpus!",
     )
 
     args = parser.parse_args()
 
     if args.generate_txt_files:
         parse_opensubtitles_xml_to_txt()
-    elif args.form_lexicon:
-        generate_lexicon()
+    elif "c" in args:
+        un = True if args.c == "UN" else False
+        opensubtitles = True if args.c == "OpenSubtitles" else False
+        generate_lexicon(un, opensubtitles)
     else:
         parser.print_help()
 

@@ -1,4 +1,5 @@
 import re
+from arabic_tokenizer import tokenizer
 
 
 def preprocess(text):
@@ -20,3 +21,13 @@ def preprocess_comparison(text):
 
     # Remove whitespaces
     return re.sub(r"\s", "", text)
+
+
+def tokenize_text(text):
+    """Tokenize a string based on separator regexps."""
+    # The more accurate tokenizer is really slow!
+    # tokens = [t.value for t in tokenizer.tokenize(text) if t.value.strip()]
+
+    # TODO: Use a better tokenizer
+    tokens = text.split()
+    return tokens
