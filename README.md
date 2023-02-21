@@ -2,6 +2,7 @@
 ```
 .
 ├── backtranslate.py: Generate backtranslated versions of an Arabic text
-├── data/: Store the datasets' files
-└── requirements.txt: List of python packages
+├── data/: Directory of dataset files
+├── prepare_AOC.py: Transform the AOC annotation file into single-annotation rows
+└── requirements.txt: List of python packa
 ```
