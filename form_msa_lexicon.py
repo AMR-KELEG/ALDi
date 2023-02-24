@@ -111,9 +111,7 @@ def generate_lexicon(open_subtitles=False, un=False):
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Form an MSA Lexicon from txt files.",
-    )
+    parser = argparse.ArgumentParser(description="Form an MSA Lexicon from txt files.",)
     parser.add_argument(
         "-g",
         "--generate_txt_files",
@@ -124,8 +122,7 @@ def main():
     subparsers = parser.add_subparsers(help="Form lexicon file.")
 
     lexicon_generation_subparser = subparsers.add_parser(
-        "form_lexicon",
-        help="Form a Lexicon Counter object from corpus txt files.",
+        "form_lexicon", help="Form a Lexicon Counter object from corpus txt files.",
     )
     lexicon_generation_subparser.add_argument(
         "-c",

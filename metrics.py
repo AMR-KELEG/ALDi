@@ -5,8 +5,8 @@ from typing import Any
 import utils
 import editdistance
 import pickle
-
 from utils import tokenize_text
+from pathlib import Path
 
 
 class DialectnessLevelMetric(ABC):
@@ -117,34 +117,31 @@ class BackTranslationMetric(DialectnessLevelMetric):
         return max(distances)
 
 
-def load_lexicons():
-    # Load the lexicon files to memory
-    with open("data/MSA_raw_corpora/lexicon_UN.pkl", "rb") as f:
-        UN_LEXICON = pickle.load(f)
+class LexiconOverlapMetric(DialectnessLevelMetric):
+    def __init__(self, lexicon_source):
 
-    with open("data/MSA_raw_corpora/lexicon_opensubtitles.pkl", "rb") as f:
-        OPENSUBTITLES_LEXICON = pickle.load(f)
+        # Make sure the lexicons are generated using "form_msa_lexicon.py"
+        assert lexicon_source in ["UN", "opensubtitles"]
+        lexicon_path = str(
+            Path("data/MSA_raw_corpora/", f"lexicon_{lexicon_source}.pkl")
+        )
+        with open(lexicon_path, "rb") as f:
+            self.LEXICON = pickle.load(f)
 
-    return UN_LEXICON, OPENSUBTITLES_LEXICON
+    def compute_dialectness_score(self, text):
+        """Compute the percentage of tokens that can not be found in an MSA lexicon.
 
+        Args:
+            text: The text to compute the dialectness score for.
 
-def compute_percentage_of_msa_tokens(text, LEXICON):
-    """Compute the percentage of tokens that can be found in an MSA lexicon."""
+        Returns:
+            A dialectness score in range [0, 1] based on number of tokens not in lexicon.
+        """
+        tokens = tokenize_text(text)
 
-    tokens = tokenize_text(text)
-
-    # TODO: This filtering should be done on building the LEXICON
-    # Ignore words occuring once
-    return 1 - (
-        len([t for t in tokens if t in LEXICON and LEXICON[t] > 1]) / len(tokens)
-    )
-
-
-if __name__ == "__main__":
-    UN_LEXICON, OPENSUBTITLES_LEXICON = load_lexicons()
-    text = input("Enter an Arabic sentence:\n")
-
-    print("UN:", compute_percentage_of_msa_tokens(text, UN_LEXICON))
-    print(
-        "OpenSubtitles:", compute_percentage_of_msa_tokens(text, OPENSUBTITLES_LEXICON)
-    )
+        # TODO: The filtering step below should be done on building the LEXICON!
+        # Ignore words occuring once
+        return 1 - (
+            len([t for t in tokens if t in self.LEXICON and self.LEXICON[t] > 1])
+            / len(tokens)
+        )
