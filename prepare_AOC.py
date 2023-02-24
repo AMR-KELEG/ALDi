@@ -142,8 +142,7 @@ def group_annotations_by_sentence_id(df):
     # Form the annotations df - grouped by the sentence
     annotations = []
     for sentence, group in groupby(
-        [row for i, row in df.iterrows()],
-        key=lambda row: row["Sentence"],
+        [row for i, row in df.iterrows()], key=lambda row: row["Sentence"],
     ):
         group_items = list(group)
         group_items = sorted(group_items, key=lambda d: d["AID"])
