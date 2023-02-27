@@ -103,7 +103,7 @@ def main():
     prediction_subparser.add_argument(
         "-o",
         required=True,
-        help="The output directory.",
+        help="The output filename.",
     )
     args = parser.parse_args()
 
@@ -143,7 +143,7 @@ def main():
             lambda l: (sum(l) / len(l)) / 3
         )
 
-        df.to_csv("TODO.tsv", index=False, sep="\t")
+        df.to_csv(args.o, index=False, sep="\t")
 
 
 if __name__ == "__main__":
