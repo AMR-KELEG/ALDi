@@ -131,6 +131,18 @@ def main():
 
         df = pd.read_csv(args.d, sep="\t")
         df["prediction"] = prediction_logits
+
+        # TODO: Adapt this mapping into the dataset creation script
+        # Map "+2" to "0"
+        df["mapped_dialectness_level"] = df["dialectness_level"].apply(
+            lambda l: [0 if float(v) == 2 else -float(v) for v in l[1:-1].split(",")]
+        )
+
+        # Map scores from [0, 3] to [0, 1]
+        df["mapped_average_dialectness_level"] = df["mapped_dialectness_level"].apply(
+            lambda l: (sum(l) / len(l)) / 3
+        )
+
         df.to_csv("TODO.tsv", index=False, sep="\t")
 
 
