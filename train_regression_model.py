@@ -52,12 +52,6 @@ class AOCDataset(torch.utils.data.Dataset):
 
 
 def main():
-    # Args:
-    # model_name
-    # checkpoint_path
-    # dataset source
-    # output_dir
-    #
     parser = argparse.ArgumentParser(
         "Train a regression model for determining the level of dialcetness."
     )
@@ -74,9 +68,9 @@ def main():
         help="The path of the training dataset.",
     )
     training_subparser.add_argument(
+        "-model_name",
         "-m",
         default="UBC-NLP/MARBERT",
-        required=True,
         help="The model name.",
     )
     training_subparser.add_argument(
@@ -99,7 +93,6 @@ def main():
         "-model_name",
         "-m",
         default="UBC-NLP/MARBERT",
-        required=True,
         help="The model name.",
     )
     prediction_subparser.add_argument(
@@ -121,7 +114,7 @@ def main():
             args.model_name, num_labels=1
         )
         # TODO: Update the training arguments
-        training_args = TrainingArguments(output_dir=args.o)
+        training_args = TrainingArguments(output_dir=args.o, save_strategy="epoch")
         # "data/AOC/train_youm7_c.tsv"
         train_dataset = AOCDataset(tokenizer, args.d)
         trainer = Trainer(model, args=training_args, train_dataset=train_dataset)
