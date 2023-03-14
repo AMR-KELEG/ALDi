@@ -35,10 +35,12 @@ class BackTranslationMetric(DialectnessLevelMetric):
             try:
                 response = requests.get(url)
                 return response.json()["translatedText"]
-            except:
+            except Exception as e:
                 n_retries -= 1
-        #  TODO: Raise a logging error message!
-        return ""
+
+                # Raise an exception if the translation process can not be completed
+                if n_retries == 0:
+                    raise e
 
     def backtranslate(self, arabic_text: str) -> dict[str, str | dict[str, Any]]:
         """Backtranslate text using QCRI's Shaheen models.
