@@ -4,6 +4,9 @@ from abc import ABC, abstractmethod
 from typing import Any
 import utils
 import editdistance
+import pickle
+from utils import tokenize_text
+from pathlib import Path
 
 
 class DialectnessLevelMetric(ABC):
@@ -112,3 +115,33 @@ class BackTranslationMetric(DialectnessLevelMetric):
         ]
 
         return max(distances)
+
+
+class LexiconOverlapMetric(DialectnessLevelMetric):
+    def __init__(self, lexicon_source):
+
+        # Make sure the lexicons are generated using "form_msa_lexicon.py"
+        assert lexicon_source in ["UN", "opensubtitles"]
+        lexicon_path = str(
+            Path("data/MSA_raw_corpora/", f"lexicon_{lexicon_source}.pkl")
+        )
+        with open(lexicon_path, "rb") as f:
+            self.LEXICON = pickle.load(f)
+
+    def compute_dialectness_score(self, text):
+        """Compute the percentage of tokens that can not be found in an MSA lexicon.
+
+        Args:
+            text: The text to compute the dialectness score for.
+
+        Returns:
+            A dialectness score in range [0, 1] based on number of tokens not in lexicon.
+        """
+        tokens = tokenize_text(text)
+
+        # TODO: The filtering step below should be done on building the LEXICON!
+        # Ignore words occuring once
+        return 1 - (
+            len([t for t in tokens if t in self.LEXICON and self.LEXICON[t] > 1])
+            / len(tokens)
+        )
