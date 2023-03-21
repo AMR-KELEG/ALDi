@@ -259,6 +259,12 @@ def main():
         .reset_index(drop=True)
     )
 
+    sentences = set(single_sentence_comment_df["Sentence"].tolist())
+    discarded_df = df[df["Sentence"].progress_apply(lambda s: s not in sentences)]
+    discarded_df.to_csv(
+        str(Path(BASE_DATASET_DIR, "AOC_discarded.tsv")), index=False, sep="\t"
+    )
+
     annotations_df = group_annotations_by_sentence_id(single_sentence_comment_df)
     #  Document ID can be repeated in multiple sources but referring to different documents
     annotations_df["document"] = annotations_df.apply(
