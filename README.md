@@ -1,4 +1,6 @@
 # Is this Dialectal?
+[![Pylint](https://github.com/AMR-KELEG/Arabic-Formality/actions/workflows/pylint.yml/badge.svg)](https://github.com/AMR-KELEG/Arabic-Formality/actions/workflows/pylint.yml)
+
 ```
 .
 ├── backtranslate.py: Generate backtranslated versions of an Arabic text
