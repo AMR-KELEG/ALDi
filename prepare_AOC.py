@@ -211,7 +211,7 @@ def generate_sliced_df(df, percentage_within):
     """Find the part of the dataset covering at least "percentage_within"% of the dataset.
 
     Args:
-        df: The dataframe to slice.
+        df: The dataframe to slice sorted according to the "document" column.
         percentage_within: The percentage of the dataframe to slice.
 
     Returns:
