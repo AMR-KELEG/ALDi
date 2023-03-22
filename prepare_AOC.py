@@ -135,7 +135,7 @@ def augment_AOC_cols(df):
     df["is_junk"] = df["Sentence"].apply(lambda s: s in junk_sentences)
 
     # Map the categorical dialectness levels to numeric values
-    dialectness_level_map = {"most": -3, "mixed": -2, "little": -1, "msa": +2}
+    dialectness_level_map = {"most": 1, "mixed": 2 / 3, "little": 1 / 3, "msa": 0}
     df["dialectness_level"] = df["DLevel"].apply(
         lambda l: dialectness_level_map.get(l, None)
     )
