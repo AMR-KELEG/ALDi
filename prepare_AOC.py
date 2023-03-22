@@ -19,9 +19,14 @@ from collections import Counter
 tqdm.pandas()
 from urllib.request import urlretrieve
 
+import argparse
+
 BASE_DATASET_DIR = "data/AOC"
 RAW_DATASET_FILE = str(Path(BASE_DATASET_DIR, "dialectid_data.tsv"))
-DATASET_URL = "https://raw.githubusercontent.com/sjeblee/AOC/master/stuff-from-omar/annotated-aoc-data/dialectid_data.tsv"
+DATASET_URL = (
+    "https://raw.githubusercontent.com/sjeblee/AOC/master/"
+    + "stuff-from-omar/annotated-aoc-data/dialectid_data.tsv"
+)
 
 
 def download_AOC():
@@ -106,6 +111,14 @@ def explode_AOC():
 
 
 def augment_AOC_cols(df):
+    """Augment the columns of the dataframe.
+
+    Args:
+        df: A dataframe of AOC samples.
+
+    Returns:
+        An augmented version of the dataframe.
+    """
     df["#_tokens"] = df["Sentence"].apply(lambda s: len(str(s).split()))
 
     sentences_count = Counter(df["Sentence"])
@@ -122,7 +135,7 @@ def augment_AOC_cols(df):
     df["is_junk"] = df["Sentence"].apply(lambda s: s in junk_sentences)
 
     # Map the categorical dialectness levels to numeric values
-    dialectness_level_map = {"most": -3, "mixed": -2, "little": -1, "msa": +2}
+    dialectness_level_map = {"most": 1, "mixed": 2 / 3, "little": 1 / 3, "msa": 0}
     df["dialectness_level"] = df["DLevel"].apply(
         lambda l: dialectness_level_map.get(l, None)
     )
@@ -142,7 +155,8 @@ def group_annotations_by_sentence_id(df):
     # Form the annotations df - grouped by the sentence
     annotations = []
     for sentence, group in groupby(
-        [row for i, row in df.iterrows()], key=lambda row: row["Sentence"],
+        [row for i, row in df.iterrows()],
+        key=lambda row: row["Sentence"],
     ):
         group_items = list(group)
         group_items = sorted(group_items, key=lambda d: d["AID"])
@@ -177,8 +191,8 @@ def group_annotations_by_sentence_id(df):
                 "dialectness_level": dialectness_level,
                 "average_dialectness_level": sum(dialectness_level)
                 / len(dialectness_level),
-                "same_polarity": all([s < 0 for s in dialectness_level])
-                or all([s > 0 for s in dialectness_level]),
+                "same_polarity": all([s == 0 for s in dialectness_level])
+                or all([s != 0 for s in dialectness_level]),
                 "same_label": len(set(dialectness_level)) == 1,
                 "annotator_dialect": native_dialect,
                 "annotator_location": annotator_location,
@@ -193,7 +207,46 @@ def group_annotations_by_sentence_id(df):
     return annotations_df
 
 
-if __name__ == "__main__":
+def generate_sliced_df(df, percentage_within):
+    """Find the part of the dataset covering at least "percentage_within"% of the dataset.
+
+    Args:
+        df: The dataframe to slice sorted according to the "document" column.
+        percentage_within: The percentage of the dataframe to slice.
+
+    Returns:
+        A dataframe of the required percentage size.
+    """
+
+    n_required = int(percentage_within * df.shape[0])
+    doc_comments_counts = df["document"].value_counts().tolist()
+    doc_cum_counts = doc_comments_counts
+
+    for i in range(1, len(doc_cum_counts)):
+        doc_cum_counts[i] += doc_cum_counts[i - 1]
+        if doc_cum_counts[i] >= n_required:
+            return df.iloc[: doc_cum_counts[i]]
+
+    return df
+
+
+def main():
+    parser = argparse.ArgumentParser("Form AOC data splits.")
+    parser.add_argument(
+        "--train_size",
+        default=0.8,
+        help="Percentage of the dataset to be used for the training split.",
+    )
+    parser.add_argument(
+        "--dev_size",
+        default=0.1,
+        help="Percentage of the dataset to be used for the development split.",
+    )
+
+    args = parser.parse_args()
+    train_size = args.train_size
+    dev_size = args.dev_size
+
     download_AOC()
 
     df = explode_AOC()
@@ -218,18 +271,56 @@ if __name__ == "__main__":
         .reset_index(drop=True)
     )
 
+    sentences = set(single_sentence_comment_df["Sentence"].tolist())
+    discarded_df = df[df["Sentence"].progress_apply(lambda s: s not in sentences)]
+    discarded_df.to_csv(
+        str(Path(BASE_DATASET_DIR, "AOC_discarded.tsv")), index=False, sep="\t"
+    )
+
     annotations_df = group_annotations_by_sentence_id(single_sentence_comment_df)
+    #  Document ID can be repeated in multiple sources but referring to different documents
+    annotations_df["document"] = annotations_df.apply(
+        lambda row: f'{row["source"]}_{int(row["document"])}', axis=1
+    )
     annotations_df.to_csv(
         str(Path(BASE_DATASET_DIR, "AOC_aggregated.tsv")), index=False, sep="\t"
     )
 
-    train_percentage = 0.9
+    # Find the number of comments for each document in the corpus
+    comments_per_document = (
+        annotations_df["document"]
+        .value_counts()
+        .reset_index()
+        .to_dict(orient="records")
+    )
+    comments_per_document = {d["index"]: d["document"] for d in comments_per_document}
+    annotations_df["comments_per_document"] = annotations_df["document"].apply(
+        lambda d: comments_per_document[d]
+    )
+
+    # (5) Make sure that the comments to the same article are within the same split
     for source, gdf in annotations_df.groupby("source"):
-        shuffled_df = gdf.sample(n=gdf.shape[0], random_state=42)
-        n_train_samples = round(shuffled_df.shape[0] * train_percentage)
-        shuffled_df.iloc[:n_train_samples].to_csv(
+        gdf.sort_values(
+            by=["comments_per_document", "document"], inplace=True, ascending=False
+        )
+
+        train_df = generate_sliced_df(gdf, train_size)
+        train_df.to_csv(
             str(Path(BASE_DATASET_DIR, f"train_{source}.tsv")), index=False, sep="\t"
         )
-        shuffled_df.iloc[n_train_samples:].to_csv(
+
+        dev_df = generate_sliced_df(gdf, train_size + dev_size).iloc[
+            train_df.shape[0] :
+        ]
+        dev_df.to_csv(
+            str(Path(BASE_DATASET_DIR, f"dev_{source}.tsv")), index=False, sep="\t"
+        )
+
+        test_df = gdf.iloc[train_df.shape[0] + dev_df.shape[0] :]
+        test_df.to_csv(
             str(Path(BASE_DATASET_DIR, f"test_{source}.tsv")), index=False, sep="\t"
         )
+
+
+if __name__ == "__main__":
+    main()
