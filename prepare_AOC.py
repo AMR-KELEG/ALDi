@@ -191,8 +191,8 @@ def group_annotations_by_sentence_id(df):
                 "dialectness_level": dialectness_level,
                 "average_dialectness_level": sum(dialectness_level)
                 / len(dialectness_level),
-                "same_polarity": all([s < 0 for s in dialectness_level])
-                or all([s > 0 for s in dialectness_level]),
+                "same_polarity": all([s == 0 for s in dialectness_level])
+                or all([s != 0 for s in dialectness_level]),
                 "same_label": len(set(dialectness_level)) == 1,
                 "annotator_dialect": native_dialect,
                 "annotator_location": annotator_location,
