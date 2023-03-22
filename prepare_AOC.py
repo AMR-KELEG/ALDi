@@ -23,7 +23,10 @@ import argparse
 
 BASE_DATASET_DIR = "data/AOC"
 RAW_DATASET_FILE = str(Path(BASE_DATASET_DIR, "dialectid_data.tsv"))
-DATASET_URL = "https://raw.githubusercontent.com/sjeblee/AOC/master/stuff-from-omar/annotated-aoc-data/dialectid_data.tsv"
+DATASET_URL = (
+    "https://raw.githubusercontent.com/sjeblee/AOC/master/"
+    + "stuff-from-omar/annotated-aoc-data/dialectid_data.tsv"
+)
 
 
 def download_AOC():
@@ -108,6 +111,14 @@ def explode_AOC():
 
 
 def augment_AOC_cols(df):
+    """Augment the columns of the dataframe.
+
+    Args:
+        df: A dataframe of AOC samples.
+
+    Returns:
+        An augmented version of the dataframe.
+    """
     df["#_tokens"] = df["Sentence"].apply(lambda s: len(str(s).split()))
 
     sentences_count = Counter(df["Sentence"])
@@ -144,7 +155,8 @@ def group_annotations_by_sentence_id(df):
     # Form the annotations df - grouped by the sentence
     annotations = []
     for sentence, group in groupby(
-        [row for i, row in df.iterrows()], key=lambda row: row["Sentence"],
+        [row for i, row in df.iterrows()],
+        key=lambda row: row["Sentence"],
     ):
         group_items = list(group)
         group_items = sorted(group_items, key=lambda d: d["AID"])
@@ -196,14 +208,14 @@ def group_annotations_by_sentence_id(df):
 
 
 def generate_sliced_df(df, percentage_within):
-    """Find the percentage of the dataset covering "percentage_within" of the dataset.
+    """Find the part of the dataset covering at least "percentage_within"% of the dataset.
 
     Args:
         df: The dataframe to slice.
         percentage_within: The percentage of the dataframe to slice.
 
     Returns:
-        A dataframe of the rquired percentage size.
+        A dataframe of the required percentage size.
     """
 
     n_required = int(percentage_within * df.shape[0])
