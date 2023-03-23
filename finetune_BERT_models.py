@@ -78,7 +78,8 @@ def main():
 
     subparsers = parser.add_subparsers()
     training_subparser = subparsers.add_parser(
-        "train", help="Train the regression model.",
+        "train",
+        help="Train the regression model.",
     )
     training_subparser.set_defaults(mode="train")
     training_subparser.add_argument(
@@ -105,20 +106,30 @@ def main():
     )
 
     prediction_subparser = subparsers.add_parser(
-        "predict", help="Generate predictions using the regression model.",
+        "predict",
+        help="Generate predictions using the regression model.",
     )
     prediction_subparser.set_defaults(mode="predict")
     prediction_subparser.add_argument(
-        "-d", required=True, help="The path of the dataset.",
+        "-d",
+        required=True,
+        help="The path of the dataset.",
     )
     prediction_subparser.add_argument(
-        "-model_name", "-m", default="UBC-NLP/MARBERT", help="The model name.",
+        "-model_name",
+        "-m",
+        default="UBC-NLP/MARBERT",
+        help="The model name.",
     )
     prediction_subparser.add_argument(
-        "-p", required=True, help="The trained model path.",
+        "-p",
+        required=True,
+        help="The trained model path.",
     )
     prediction_subparser.add_argument(
-        "-o", required=True, help="The output filename.",
+        "-o",
+        required=True,
+        help="The output filename.",
     )
     args = parser.parse_args()
 
