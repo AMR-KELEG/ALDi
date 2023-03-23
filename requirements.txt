@@ -3,6 +3,7 @@ datasets
 transformers[torch]
 evaluate
 scikit-learn
+tensorboardX
 
 # Data
 pandas
