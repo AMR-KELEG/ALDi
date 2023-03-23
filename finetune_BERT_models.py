@@ -4,6 +4,7 @@ import random
 import argparse
 import pandas as pd
 from glob import glob
+from pathlib import Path
 
 from torch import Tensor
 from transformers import Trainer, TrainingArguments
@@ -148,7 +149,13 @@ def main():
             evaluation_strategy="steps",
         )
         train_dataset = AOCDataset(tokenizer, args.train)
-        eval_dataset = AOCDataset(tokenizer, args.dev)
+
+        eval_dataset_filenames = glob(args.dev)
+        eval_dataset = {
+            Path(filename).name.split("_")[1]: AOCDataset(tokenizer, filename)
+            for filename in eval_dataset_filenames
+        }
+        # eval_dataset = AOCDataset(tokenizer, args.dev)
         trainer = Trainer(
             model,
             args=training_args,
