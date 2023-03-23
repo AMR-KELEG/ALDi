@@ -265,14 +265,20 @@ def main():
             & (df["#_tokens"] <= 27)
             & (df["#_annotations"] == 3)
             & (~df["is_junk"])
-            & (df["source"].apply(lambda s: not str(s).endswith("_a")))
+            & (~df["is_control_sentence"])
         ]
         .copy()
         .reset_index(drop=True)
     )
 
     sentences = set(single_sentence_comment_df["Sentence"].tolist())
-    discarded_df = df[df["Sentence"].progress_apply(lambda s: s not in sentences)]
+    discarded_df = df[
+        df["Sentence"].progress_apply(lambda s: s not in sentences)
+    ].copy()
+    discarded_df["is_not_a_sentence"] = (discarded_df["#_tokens"] < 5) | (
+        discarded_df["#_tokens"] > 27
+    )
+    discarded_df["has_annotations_issue"] = discarded_df["#_annotations"] != 3
     discarded_df.to_csv(
         str(Path(BASE_DATASET_DIR, "AOC_discarded.tsv")), index=False, sep="\t"
     )
