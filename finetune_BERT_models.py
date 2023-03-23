@@ -1,3 +1,4 @@
+import math
 import torch
 import random
 import argparse
@@ -11,6 +12,22 @@ from transformers import AutoTokenizer, BertForSequenceClassification
 
 random.seed(42)
 torch.manual_seed(42)
+
+
+def compute_evaluation_metrics(eval_prediction):
+    """Compute RMSE metric as a callback during training.
+
+    Args:
+        eval_prediction: An EvalPrediction.
+
+    Returns:
+        A dictionary of evaluation metrics to report during training.
+    """
+    labels = eval_prediction.label_ids.reshape(-1)
+    predictions = eval_prediction.predictions.reshape(-1)
+    sq_error = (labels - predictions) ** 2
+
+    return {"RMSE": math.sqrt(sq_error.sum() / sq_error.shape[0])}
 
 
 def transform_input(tokenizer, filenames):
@@ -65,15 +82,26 @@ def main():
     )
     training_subparser.set_defaults(mode="train")
     training_subparser.add_argument(
+        "--train",
         "-d",
         required=True,
         help="The filename of the training dataset (allows for glob).",
     )
     training_subparser.add_argument(
-        "-model_name", "-m", default="UBC-NLP/MARBERT", help="The model name.",
+        "--dev",
+        required=False,
+        help="The filename of the development dataset (allows for glob).",
     )
     training_subparser.add_argument(
-        "-o", required=True, help="The output directory.",
+        "-model_name",
+        "-m",
+        default="UBC-NLP/MARBERT",
+        help="The model name.",
+    )
+    training_subparser.add_argument(
+        "-o",
+        required=True,
+        help="The output directory.",
     )
 
     prediction_subparser = subparsers.add_parser(
@@ -104,18 +132,19 @@ def main():
         NO_STEPS = 5
         training_args = TrainingArguments(
             output_dir=args.o,
-            save_strategy="steps",
-            save_steps=NO_STEPS,
+            save_strategy="epoch",
             eval_steps=NO_STEPS,
-            full_determinism=True,
             evaluation_strategy="steps",
         )
-        train_dataset = AOCDataset(tokenizer, args.d)
+        train_dataset = AOCDataset(tokenizer, args.train)
+        eval_dataset = AOCDataset(tokenizer, args.dev)
         trainer = Trainer(
             model,
             args=training_args,
             train_dataset=train_dataset,
+            eval_dataset=eval_dataset,
             callbacks=[TensorBoardCallback],
+            compute_metrics=compute_evaluation_metrics,
         )
         trainer.train()
     else:
