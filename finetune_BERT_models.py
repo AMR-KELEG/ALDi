@@ -163,7 +163,7 @@ def main():
         model = BertForSequenceClassification.from_pretrained(args.p, num_labels=1)
         test_dataset = AOCDataset(tokenizer, args.d)
 
-        trainer = Trainer(model, args=None, train_dataset=test_dataset)
+        trainer = Trainer(model, args=None, train_dataset=None)
         predictions = trainer.predict(test_dataset)
         prediction_logits = predictions.predictions.reshape(-1).tolist()
 
