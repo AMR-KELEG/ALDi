@@ -36,7 +36,7 @@ def transform_input(tokenizer, filenames):
 
     Args:
         tokenizer: The model's tokenizer.
-        filename: A list of tsv files of AOC.
+        filenames: A list of tsv files of AOC.
 
     Returns:
         Features in the form of a HF dict format
