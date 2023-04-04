@@ -10,3 +10,4 @@ pandas
 editdistance
 tqdm
 xlrd
+statsmodels
