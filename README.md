@@ -8,5 +8,6 @@
 ├── prepare_AOC.py: Transform the AOC annotation file into single-annotation rows
 ├── prepare_DIAL2MSA.py: Filter out samples with non-perfect confidence from DIAL2MSA
 ├── prepare_bible.py: Merge the bible MSA/TUN/MOR translations
-└── requirements.txt: List of python packa
+├── finetune_BERT_models.py: Fine-tune a regression head on top of a BERT model and load it to make predictions on a test set
+└── requirements.txt: List of pythonckages
 ```
