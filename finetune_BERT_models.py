@@ -44,6 +44,12 @@ def transform_input(tokenizer, filenames):
     dfs = [pd.read_csv(filename, sep="\t") for filename in filenames]
 
     df = pd.concat(dfs)
+
+    # Ignore short or long sentences
+    if "sentence_length" in df.columns:
+        print("Dropping 'short' and 'long' sentences!")
+        df = df[df["sentence_length"] == "medium"]
+
     features_dict = tokenizer(
         df["sentence"].tolist(), return_tensors="pt", padding=True
     )
