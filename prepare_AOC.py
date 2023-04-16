@@ -122,11 +122,21 @@ def augment_AOC_cols(df):
     df["#_tokens"] = df["Sentence"].apply(lambda s: len(str(s).split()))
 
     sentences_count = Counter(df["Sentence"])
-    df["#_annotations"] = df["Sentence"].apply(lambda s: sentences_count[s])
+    df["#_annotations_per_sentence"] = df["Sentence"].apply(
+        lambda s: sentences_count[s]
+    )
+
+    #  Document ID can be repeated in multiple sources but referring to different documents
+    df["document"] = df.apply(lambda row: f'{row["source"]}_{row["document"]}', axis=1)
 
     # Generate an ID for each sentence to refer to it later
     sentences_id = {s: i for i, (s, c) in enumerate(sentences_count.most_common())}
-    df["SID"] = df["Sentence"].apply(lambda s: sentences_id[s])
+    df["SID"] = df.apply(
+        lambda row: f'{sentences_id[row["Sentence"]]}_{row["document"]}', axis=1
+    )
+
+    sentences_per_document_count = Counter(df["SID"])
+    df["#_annotations"] = df["SID"].apply(lambda sid: sentences_per_document_count[sid])
 
     # Find the set of sentences marked at least one as junk or without a label
     junk_sentences = set(
@@ -138,6 +148,15 @@ def augment_AOC_cols(df):
     dialectness_level_map = {"most": 1, "mixed": 2 / 3, "little": 1 / 3, "msa": 0}
     df["dialectness_level"] = df["DLevel"].apply(
         lambda l: dialectness_level_map.get(l, None)
+    )
+
+    # Categorize the sentences based on the sentence length
+    df["sentence_length"] = df["#_tokens"].apply(
+        lambda no_tokens: "short"
+        if no_tokens < 5
+        else "long"
+        if no_tokens > 27
+        else "medium"
     )
 
     return df
@@ -156,7 +175,7 @@ def group_annotations_by_sentence_id(df):
     annotations = []
     for sentence, group in groupby(
         [row for i, row in df.iterrows()],
-        key=lambda row: row["Sentence"],
+        key=lambda row: row["SID"],
     ):
         group_items = list(group)
         group_items = sorted(group_items, key=lambda d: d["AID"])
@@ -179,9 +198,6 @@ def group_annotations_by_sentence_id(df):
         dialectness_level = [
             group_item["dialectness_level"] for group_item in group_items
         ]
-        # Skip sentences if the dialect of the annotator is unknown!
-        if len(native_dialect) != 3 or len(dialect_level) != 3:
-            continue
 
         annotations.append(
             {
@@ -255,18 +271,10 @@ def main():
     df = augment_AOC_cols(df)
 
     # Filter samples keeping only sentences satisfying the following criteria:
-    # 1) Sentences longer than 4 tokens and shorter than 27 tokens (based on previous research)
-    # 2) Sentences with 3 annotations
-    # 3) Sentences that are not mark as junk by any of the 3 annotators
-    # 4) Sentences that are not extracted from articles' bodies
+    # 1) Sentences that are not mark as junk by any of the 3 annotators
+    # 2) Sentences that are not extracted from articles' bodies
     single_sentence_comment_df = (
-        df[
-            (df["#_tokens"] >= 5)
-            & (df["#_tokens"] <= 27)
-            & (df["#_annotations"] == 3)
-            & (~df["is_junk"])
-            & (~df["is_control_sentence"])
-        ]
+        df[(~df["is_junk"]) & (~df["is_control_sentence"])]
         .copy()
         .reset_index(drop=True)
     )
@@ -275,19 +283,14 @@ def main():
     discarded_df = df[
         df["Sentence"].progress_apply(lambda s: s not in sentences)
     ].copy()
-    discarded_df["is_not_a_sentence"] = (discarded_df["#_tokens"] < 5) | (
-        discarded_df["#_tokens"] > 27
-    )
+
+    discarded_df["is_not_a_sentence"] = discarded_df["sentence_length"] != "medium"
     discarded_df["has_annotations_issue"] = discarded_df["#_annotations"] != 3
     discarded_df.to_csv(
         str(Path(BASE_DATASET_DIR, "AOC_discarded.tsv")), index=False, sep="\t"
     )
 
     annotations_df = group_annotations_by_sentence_id(single_sentence_comment_df)
-    #  Document ID can be repeated in multiple sources but referring to different documents
-    annotations_df["document"] = annotations_df.apply(
-        lambda row: f'{row["source"]}_{int(row["document"])}', axis=1
-    )
     annotations_df.to_csv(
         str(Path(BASE_DATASET_DIR, "AOC_aggregated.tsv")), index=False, sep="\t"
     )
