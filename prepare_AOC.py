@@ -201,7 +201,7 @@ def group_annotations_by_sentence_id(df):
 
         annotations.append(
             {
-                "sentence": sentence,
+                "sentence": group_items[0]["Sentence"],
                 "sentence_length": group_items[0]["sentence_length"],
                 "dialect_level": dialect_level,
                 "dialect": dialect_class,
