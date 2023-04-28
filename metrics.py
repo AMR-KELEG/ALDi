@@ -7,6 +7,7 @@ import editdistance
 import pickle
 from utils import tokenize_text
 from pathlib import Path
+from transformers import AutoTokenizer, BertForSequenceClassification
 
 
 class DialectnessLevelMetric(ABC):
@@ -145,3 +146,16 @@ class LexiconOverlapMetric(DialectnessLevelMetric):
             len([t for t in tokens if t in self.LEXICON and self.LEXICON[t] > 1])
             / len(tokens)
         )
+
+
+class RegressionBERTMetric:
+    def __init__(self, model_path):
+        model_name = "UBC-NLP/MARBERT"
+
+        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+        self.model = BertForSequenceClassification.from_pretrained(
+            model_path, num_labels=1
+        )
+
+    def compute_dialectness_score(self, text):
+        return self.model(self.tokenizer(text, return_tensors="pt"))
