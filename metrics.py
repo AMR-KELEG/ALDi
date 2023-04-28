@@ -158,4 +158,8 @@ class RegressionBERTMetric:
         )
 
     def compute_dialectness_score(self, text):
-        return self.model(self.tokenizer(text, return_tensors="pt"))
+        return (
+            self.model(**self.tokenizer(text, return_tensors="pt"))
+            .logits.squeeze(-1)[0]
+            .tolist()
+        )
