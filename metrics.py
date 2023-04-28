@@ -149,9 +149,7 @@ class LexiconOverlapMetric(DialectnessLevelMetric):
 
 
 class RegressionBERTMetric:
-    def __init__(self, model_path):
-        model_name = "UBC-NLP/MARBERT"
-
+    def __init__(self, model_path, model_name="UBC-NLP/MARBERT"):
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
         self.model = BertForSequenceClassification.from_pretrained(
             model_path, num_labels=1
@@ -163,3 +161,5 @@ class RegressionBERTMetric:
             .logits.squeeze(-1)[0]
             .tolist()
         )
+
+    # TODO: Add another function to perform batch predictions

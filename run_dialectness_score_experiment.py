@@ -1,7 +1,7 @@
 import os
 import argparse
 from dataset_loaders import load_AOC, load_BIBLE, load_DIAL2MSA
-from metrics import BackTranslationMetric, LexiconOverlapMetric
+from metrics import BackTranslationMetric, LexiconOverlapMetric, RegressionBERTMetric
 from pathlib import Path
 from tqdm import tqdm
 
@@ -15,6 +15,7 @@ DATASET_LOADING_FUNCTION = {
 DIALECTNESS_METRIC = {
     "backtranslation": BackTranslationMetric,
     "lexicon": LexiconOverlapMetric,
+    "regression": RegressionBERTMetric,
 }
 
 
@@ -36,7 +37,7 @@ def main():
     parser.add_argument(
         "-metric",
         "-m",
-        choices=["backtranslation", "lexicon"],
+        choices=["backtranslation", "lexicon", "regression"],
         required=True,
         help="The dialectness level metric.",
     )
@@ -45,6 +46,23 @@ def main():
         "-lexicon_source",
         help="Source that was used to form the MSA lexicon.",
         choices=["UN", "opensubtitle"],
+    )
+    parser.add_argument(
+        "-use_medium_length",
+        help="Filter out short and long samples from AOC.",
+        required=False,
+        action="store_true",
+    )
+    parser.add_argument(
+        "-model_name",
+        help="The name of the pretrained BERT model.",
+        default="UBC-NLP/MARBERT",
+        required=False,
+    )
+    parser.add_argument(
+        "-model_path",
+        help="The path to the fine-tuned BERT model.",
+        required=False,
     )
     parser.add_argument(
         "-dialect_or_source",
@@ -63,8 +81,12 @@ def main():
 
     if args.metric == "lexicon":
         metric = DIALECTNESS_METRIC[args.metric](lexicon_source=args.lexicon_source)
-    else:
+    elif args.metric == "backtranslation":
         metric = DIALECTNESS_METRIC[args.metric]()
+    else:
+        metric = DIALECTNESS_METRIC[args.metric](
+            model_path=args.model_path, model_name=args.model_name
+        )
 
     if args.dataset == "AOC":
         dataset = DATASET_LOADING_FUNCTION[args.dataset](
@@ -78,11 +100,15 @@ def main():
     # TODO: Change the name of the column in the original tsv file
     dataset.rename(columns={"sentence": "DA_text"}, inplace=True)
 
+    # Filter out short and long samples from AOC
+    if args.dataset == "AOC" and args.use_medium_length:
+        dataset = dataset[dataset["sentence_length"] == "medium"].copy()
+
     dataset["DA_score"] = dataset["DA_text"].progress_apply(
         lambda s: metric.compute_dialectness_score(s)
     )
 
-    if args.dataset != "AOC":
+    if "MSA_text" in dataset.columns:
         dataset["MSA_score"] = dataset["MSA_text"].progress_apply(
             lambda s: metric.compute_dialectness_score(s)
         )
