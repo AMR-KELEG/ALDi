@@ -26,7 +26,7 @@ def load_BIBLE(split, dialect):
 
 
 def load_AOC(split, source):
-    assert split in ["train", "test"]
+    assert split in ["train", "dev", "test"]
     assert source in ["youm7_c", "alghad_c", "alriyadh_c"]
 
     BASE_DIR = "data/AOC/"
