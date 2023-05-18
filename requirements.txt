@@ -11,3 +11,7 @@ editdistance
 tqdm
 xlrd
 statsmodels
+
+# Analysis
+matplotlib
+beautifulsoup4
