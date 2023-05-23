@@ -36,6 +36,54 @@ def load_AOC(split, source):
     return df
 
 
+def load_Lince(split):
+    """Load dataset as list of tokens and tags/labels"""
+    # test split has no labels!
+    assert split in ["train", "dev"]
+
+    BASE_DIR = "data/lid_msaea/"
+    filename = str(Path(BASE_DIR, f"{split}.conll"))
+
+    with open(filename, "r") as f:
+        data = []
+        tokens = []
+        labels = []
+        for i, line in enumerate(f):
+            # ANERCORP/Lince splits sentences with \n
+            if line == "\n":
+                if len(tokens) > 0:
+                    data.append((tokens, labels))
+                    tokens = []
+                    labels = []
+                continue
+
+            # Lince has an additional sentence id number
+            if line.startswith("# sent_enum ="):
+                continue
+
+            try:
+                if "\t" in line:
+                    splits = line.split("\t")
+                else:
+                    splits = line.split()
+                assert len(splits) == 2
+            except:
+                print("ERROR", i, repr(line))
+                continue
+
+            # Drop whitespace tokens that are tagged as "O" in Lince
+            if not splits[0].strip():
+                print("ERROR", i, line[:-1])
+                continue
+            tokens.append(splits[0])
+            labels.append(splits[1].strip())
+
+        if len(tokens) > 0:
+            data.append((tokens, labels))
+
+    return data
+
+
 if __name__ == "__main__":
     # df = load_DIAL2MSA("test", "EGY")
     # print(df.head())
