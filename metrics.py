@@ -46,7 +46,7 @@ class BackTranslationMetric(DialectnessLevelMetric):
                 if n_retries == 0:
                     raise e
 
-    def backtranslate(self, arabic_text: str) -> dict[str, str | dict[str, Any]]:
+    def backtranslate(self, arabic_text):
         """Backtranslate text using QCRI's Shaheen models.
         Note: The method is slow!
 
@@ -120,7 +120,6 @@ class BackTranslationMetric(DialectnessLevelMetric):
 
 class LexiconOverlapMetric(DialectnessLevelMetric):
     def __init__(self, lexicon_source):
-
         # Make sure the lexicons are generated using "form_msa_lexicon.py"
         assert lexicon_source in ["UN", "opensubtitles"]
         lexicon_path = str(

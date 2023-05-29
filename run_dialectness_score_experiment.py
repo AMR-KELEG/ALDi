@@ -1,6 +1,6 @@
 import os
 import argparse
-from dataset_loaders import load_AOC, load_BIBLE, load_DIAL2MSA
+from dataset_loaders import load_AOC, load_BIBLE, load_DIAL2MSA, load_contrastive_pairs
 from metrics import BackTranslationMetric, LexiconOverlapMetric, RegressionBERTMetric
 from pathlib import Path
 from tqdm import tqdm
@@ -11,6 +11,7 @@ DATASET_LOADING_FUNCTION = {
     "AOC": load_AOC,
     "BIBLE": load_BIBLE,
     "DIAL2MSA": load_DIAL2MSA,
+    "CONTRAST": load_contrastive_pairs,
 }
 DIALECTNESS_METRIC = {
     "backtranslation": BackTranslationMetric,
@@ -26,11 +27,7 @@ def main():
     parser.add_argument(
         "-dataset",
         "-d",
-        choices=[
-            "AOC",
-            "BIBLE",
-            "DIAL2MSA",
-        ],
+        choices=sorted([str(d) for d in DATASET_LOADING_FUNCTION.keys()]),
         required=True,
         help="The dataset to compute the scores for.",
     )
@@ -66,10 +63,9 @@ def main():
     )
     parser.add_argument(
         "-dialect_or_source",
-        required=True,
         help="The dialect/source of the dataset to load.",
     )
-    parser.add_argument("-split", required=True, help="The dataset split to load.")
+    parser.add_argument("-split", help="The dataset split to load.")
 
     parser.add_argument(
         "-results_dir", required=True, help="Directory to save the results to."
@@ -92,6 +88,8 @@ def main():
         dataset = DATASET_LOADING_FUNCTION[args.dataset](
             split=args.split, source=args.dialect_or_source
         )
+    elif args.dataset == "CONTRAST":
+        dataset = DATASET_LOADING_FUNCTION[args.dataset]()
     else:
         dataset = DATASET_LOADING_FUNCTION[args.dataset](
             split=args.split, dialect=args.dialect_or_source
@@ -104,14 +102,16 @@ def main():
     if args.dataset == "AOC" and args.use_medium_length:
         dataset = dataset[dataset["sentence_length"] == "medium"].copy()
 
+    if "MSA_text" in dataset.columns:
+        dataset["MSA_score"] = dataset["MSA_text"].progress_apply(
+            lambda s: metric.compute_dialectness_score(s)
+        )
+
     dataset["DA_score"] = dataset["DA_text"].progress_apply(
         lambda s: metric.compute_dialectness_score(s)
     )
 
     if "MSA_text" in dataset.columns:
-        dataset["MSA_score"] = dataset["MSA_text"].progress_apply(
-            lambda s: metric.compute_dialectness_score(s)
-        )
         dataset["delta_score"] = dataset["DA_score"] - dataset["MSA_score"]
     dataset.to_csv(str(Path(args.results_dir, args.o)), sep="\t", index=False)
 
