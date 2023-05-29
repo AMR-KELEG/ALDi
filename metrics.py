@@ -7,6 +7,7 @@ import editdistance
 import pickle
 from utils import tokenize_text
 from pathlib import Path
+from transformers import AutoTokenizer, BertForSequenceClassification
 
 
 class DialectnessLevelMetric(ABC):
@@ -45,7 +46,7 @@ class BackTranslationMetric(DialectnessLevelMetric):
                 if n_retries == 0:
                     raise e
 
-    def backtranslate(self, arabic_text: str) -> dict[str, str | dict[str, Any]]:
+    def backtranslate(self, arabic_text):
         """Backtranslate text using QCRI's Shaheen models.
         Note: The method is slow!
 
@@ -119,7 +120,6 @@ class BackTranslationMetric(DialectnessLevelMetric):
 
 class LexiconOverlapMetric(DialectnessLevelMetric):
     def __init__(self, lexicon_source):
-
         # Make sure the lexicons are generated using "form_msa_lexicon.py"
         assert lexicon_source in ["UN", "opensubtitles"]
         lexicon_path = str(
@@ -145,3 +145,20 @@ class LexiconOverlapMetric(DialectnessLevelMetric):
             len([t for t in tokens if t in self.LEXICON and self.LEXICON[t] > 1])
             / len(tokens)
         )
+
+
+class RegressionBERTMetric:
+    def __init__(self, model_path, model_name="UBC-NLP/MARBERT"):
+        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+        self.model = BertForSequenceClassification.from_pretrained(
+            model_path, num_labels=1
+        )
+
+    def compute_dialectness_score(self, text):
+        return (
+            self.model(**self.tokenizer(text, return_tensors="pt"))
+            .logits.squeeze(-1)[0]
+            .tolist()
+        )
+
+    # TODO: Add another function to perform batch predictions
