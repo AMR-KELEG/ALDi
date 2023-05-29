@@ -1,4 +1,4 @@
-# Is this Dialectal?
+# Arabic Level of Dialectness (ALDi)
 [![Pylint](https://github.com/AMR-KELEG/Arabic-Formality/actions/workflows/pylint.yml/badge.svg)](https://github.com/AMR-KELEG/Arabic-Formality/actions/workflows/pylint.yml)
 
 ```
