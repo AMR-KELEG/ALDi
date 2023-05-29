@@ -1,5 +1,5 @@
 import re
-from arabic_tokenizer import tokenizer
+# from arabic_tokenizer import tokenizer
 
 
 def preprocess(text):
