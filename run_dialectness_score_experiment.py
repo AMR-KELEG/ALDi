@@ -27,14 +27,14 @@ def main():
     parser.add_argument(
         "-dataset",
         "-d",
-        choices=sorted([str(d) for d in DATASET_LOADING_FUNCTION.keys()]),
+        choices=sorted(DATASET_LOADING_FUNCTION.keys()),
         required=True,
         help="The dataset to compute the scores for.",
     )
     parser.add_argument(
         "-metric",
         "-m",
-        choices=["backtranslation", "lexicon", "regression"],
+        choices=sorted(DIALECTNESS_METRIC.keys()),
         required=True,
         help="The dialectness level metric.",
     )
