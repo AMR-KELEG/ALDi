@@ -159,8 +159,13 @@ class RegressionBERTMetric:
         )
 
     def compute_dialectness_score(self, text):
+        # TODO: Validate the max_length!
         return (
-            self.model(**self.tokenizer(text, return_tensors="pt"))
+            self.model(
+                **self.tokenizer(
+                    text, return_tensors="pt", truncation=True, max_length=512
+                )
+            )
             .logits.squeeze(-1)[0]
             .tolist()
         )
@@ -180,16 +185,25 @@ class LIBERTMetric:
         self.INDECIES_TO_TAGS = {i: tag for i, tag in enumerate(TAGS)}
 
     def compute_dialectness_score(self, text):
-        logits = self.model(**self.tokenizer(text, return_tensors="pt")).logits
+        logits = self.model(
+            **self.tokenizer(text, return_tensors="pt", truncation=True, max_length=512)
+        ).logits
 
         # Ignore the labels for [CLS] and [SEP]
         subwords_labels = logits.argmax(axis=-1).numpy()[0][1:-1]
         tokens = utils.tokenize_text(text)
-        subwords = [self.tokenizer.tokenize(token) for token in tokens]
+        subwords = [
+            self.tokenizer.tokenize(token)
+            for token in tokens
+            if self.tokenizer.tokenize(token)
+        ]
         n_subwords = [len(l) for l in subwords]
         first_subword_indecies = [sum(n_subwords[0:i]) for i in range(len(n_subwords))]
 
-        tokens_labels = [subwords_labels[index] for index in first_subword_indecies]
+        # TODO: Validate the condition!
+        tokens_labels = [
+            subwords_labels[index] for index in first_subword_indecies if index < 510
+        ]
         tokens_tags = [self.INDECIES_TO_TAGS[l] for l in tokens_labels]
 
         # Compute the CMI (Code Mixing Index)

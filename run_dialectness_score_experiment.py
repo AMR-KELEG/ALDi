@@ -69,6 +69,7 @@ def main():
     )
     parser.add_argument(
         "-dialect_or_source",
+        default=None,
         help="The dialect/source of the dataset to load.",
     )
     parser.add_argument("-split", help="The dataset split to load.")

@@ -30,12 +30,14 @@ def load_BIBLE(dialect):
     return df[["DA_text", "MSA_text"]]
 
 
-def load_AOC(split, source):
-    assert split in ["train", "dev", "test"]
-    assert source in ["youm7_c", "alghad_c", "alriyadh_c"]
+def load_AOC(split, source=None):
+    assert split in ["train", "test", "dev"]
+    assert source in ["youm7_c", "alghad_c", "alriyadh_c", None]
 
-    BASE_DIR = "data/AOC/"
-    filename = str(Path(BASE_DIR, f"{split}_{source}.tsv"))
+    BASE_DIR = "data/AOC"
+    filename = str(Path(BASE_DIR, f"{split}.tsv"))
+
+    # TODO: Handle only loading samples from a specific source
 
     df = pd.read_csv(filename, sep="\t")
     return df
