@@ -7,7 +7,11 @@ import editdistance
 import pickle
 from utils import tokenize_text
 from pathlib import Path
-from transformers import AutoTokenizer, BertForSequenceClassification
+from transformers import (
+    AutoTokenizer,
+    BertForSequenceClassification,
+    AutoModelForTokenClassification,
+)
 
 
 class DialectnessLevelMetric(ABC):
@@ -162,3 +166,38 @@ class RegressionBERTMetric:
         )
 
     # TODO: Add another function to perform batch predictions
+
+
+class LIBERTMetric:
+    def __init__(self, model_path, model_name="UBC-NLP/MARBERT"):
+        TAGS = ["ambiguous", "lang1", "lang2", "mixed", "ne", "other"]
+
+        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+        self.model = AutoModelForTokenClassification.from_pretrained(
+            model_path, num_labels=len(TAGS)
+        )
+
+        self.INDECIES_TO_TAGS = {i: tag for i, tag in enumerate(TAGS)}
+
+    def compute_dialectness_score(self, text):
+        logits = self.model(**self.tokenizer(text, return_tensors="pt")).logits
+
+        # Ignore the labels for [CLS] and [SEP]
+        subwords_labels = logits.argmax(axis=-1).numpy()[0][1:-1]
+        tokens = utils.tokenize_text(text)
+        subwords = [self.tokenizer.tokenize(token) for token in tokens]
+        n_subwords = [len(l) for l in subwords]
+        first_subword_indecies = [sum(n_subwords[0:i]) for i in range(len(n_subwords))]
+
+        tokens_labels = [subwords_labels[index] for index in first_subword_indecies]
+        tokens_tags = [self.INDECIES_TO_TAGS[l] for l in tokens_labels]
+
+        # Compute the CMI (Code Mixing Index)
+        # Ignore: "ambiguous", "ne" (named entity), "other" (emojis, ..)
+        n_msa_tokens = sum([t == "lang1" for t in tokens_tags])
+        n_da_tokens = sum([t in ["lang2", "mixed"] for t in tokens_tags])
+
+        if n_msa_tokens + n_da_tokens != 0:
+            return n_da_tokens / (n_msa_tokens + n_da_tokens)
+        else:
+            return 0

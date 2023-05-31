@@ -1,7 +1,12 @@
 import os
 import argparse
 from dataset_loaders import load_AOC, load_BIBLE, load_DIAL2MSA, load_contrastive_pairs
-from metrics import BackTranslationMetric, LexiconOverlapMetric, RegressionBERTMetric
+from metrics import (
+    BackTranslationMetric,
+    LexiconOverlapMetric,
+    RegressionBERTMetric,
+    LIBERTMetric,
+)
 from pathlib import Path
 from tqdm import tqdm
 
@@ -17,6 +22,7 @@ DIALECTNESS_METRIC = {
     "backtranslation": BackTranslationMetric,
     "lexicon": LexiconOverlapMetric,
     "regression": RegressionBERTMetric,
+    "tagging": LIBERTMetric,
 }
 
 
