@@ -41,6 +41,7 @@ def explode_AOC():
     """Explode HIT annotation rows into single annotation ones."""
 
     df = pd.read_csv(RAW_DATASET_FILE, sep="\t", on_bad_lines="skip", low_memory=False)
+    # Columns repeated 12 times per HIT
     columns = ["Sentence", "DClass", "DLevel", "source", "document", "part", "segment"]
     dfs = []
 
@@ -120,19 +121,20 @@ def augment_AOC_cols(df):
         An augmented version of the dataframe.
     """
     df["#_tokens"] = df["Sentence"].apply(lambda s: len(str(s).split()))
-
-    sentences_count = Counter(df["Sentence"])
-    df["#_annotations"] = df["Sentence"].apply(lambda s: sentences_count[s])
+    df["length"] = df["#_tokens"].apply(
+        lambda n: "short" if n < 5 else "long" if n > 27 else "medium"
+    )
 
     # Generate an ID for each sentence to refer to it later
+    sentences_count = Counter(df["Sentence"])
     sentences_id = {s: i for i, (s, c) in enumerate(sentences_count.most_common())}
-    df["SID"] = df["Sentence"].apply(lambda s: sentences_id[s])
-
-    # Find the set of sentences marked at least one as junk or without a label
-    junk_sentences = set(
-        df.loc[df["DLevel"].isin(["junk", "prompt"]), "Sentence"].tolist()
+    df["SENTENCE_ID"] = df["Sentence"].apply(lambda s: sentences_id[s])
+    df["document"] = df["document"].apply(
+        lambda d: int(d) if str(d) != "nan" else "nan"
     )
-    df["is_junk"] = df["Sentence"].apply(lambda s: s in junk_sentences)
+    df["COMMENT_ID"] = df.apply(
+        lambda row: f"{row['source']}_{row['document']}_{row['SENTENCE_ID']}", axis=1
+    )
 
     # Map the categorical dialectness levels to numeric values
     dialectness_level_map = {"most": 1, "mixed": 2 / 3, "little": 1 / 3, "msa": 0}
@@ -152,54 +154,98 @@ def group_annotations_by_sentence_id(df):
     Returns:
         A grouped dataframe of annotations
     """
-    # Form the annotations df - grouped by the sentence
+    # Form the annotations df - grouped by the generated comment id
     annotations = []
-    for sentence, group in groupby(
+    df.sort_values(by="COMMENT_ID", inplace=True)
+    for comment_id, group in groupby(
         [row for i, row in df.iterrows()],
-        key=lambda row: row["Sentence"],
+        key=lambda row: row["COMMENT_ID"],
     ):
         group_items = list(group)
         group_items = sorted(group_items, key=lambda d: d["AID"])
+
+        assert len(set([item["Sentence"] for item in group_items])) == 1
+
+        sentence = group_items[0]["Sentence"]
+        comment_id = group_items[0]["COMMENT_ID"]
+
         dialect_level = [
-            str(group_item["DLevel"])
+            None
+            if str(group_item["DLevel"]) in ["nan", "prompt"]
+            else str(group_item["DLevel"])
             for group_item in group_items
-            if str(group_item["DLevel"]) not in ["nan", "prompt", "junk"]
         ]
-        dialect_class = [group_item["DClass"] for group_item in group_items]
+
+        # Ignore annotations with missing dialect level
+        group_items_with_level = [
+            item for item, level in zip(group_items, dialect_level) if level
+        ]
+
+        dialect_level = [
+            None
+            if str(group_item["DLevel"]) in ["nan", "prompt"]
+            else str(group_item["DLevel"])
+            for group_item in group_items_with_level
+        ]
+        dialect_class = [
+            group_item["DClass"]
+            if str(group_item["DClass"]) not in ["nan", "prompt"]
+            else group_item["DLevel"]
+            if str(group_item["DLevel"]) in ["msa", "junk"]
+            else None
+            for group_item in group_items_with_level
+        ]
+
         native_dialect = [
-            str(group_item["native_dialect"])
-            for group_item in group_items
-            if str(group_item["native_dialect"]) not in ["nan"]
+            str(group_item["native_dialect"]) for group_item in group_items_with_level
         ]
-        annotator_location = [group_item["country_live"] for group_item in group_items]
+        native_arabic_speaker = [
+            str(group_item["native_arabic"]) for group_item in group_items_with_level
+        ]
+        annotator_residence = [
+            group_item["country_live"] for group_item in group_items_with_level
+        ]
+        annotator_city_from_IP = [
+            group_item["WorkerCity"] for group_item in group_items_with_level
+        ]
         annotator_country_from_IP = [
-            group_item["WorkerCountry"] for group_item in group_items
+            group_item["WorkerCountry"] for group_item in group_items_with_level
         ]
 
         dialectness_level = [
-            group_item["dialectness_level"] for group_item in group_items
+            group_item["dialectness_level"] for group_item in group_items_with_level
         ]
-        # Skip sentences if the dialect of the annotator is unknown!
-        if len(native_dialect) != 3 or len(dialect_level) != 3:
+
+        has_junk_annotation = "junk" in dialect_level
+
+        if not dialectness_level:
             continue
 
         annotations.append(
             {
-                "sentence": sentence,
+                "annotator_city_from_IP": annotator_city_from_IP,
+                "annotator_country_from_IP": annotator_country_from_IP,
+                "annotator_dialect": native_dialect,
+                "annotator_id": [
+                    group_item["AID"] for group_item in group_items_with_level
+                ],
+                "annotator_residence": annotator_residence,
+                "annotator_native_arabic_speaker": native_arabic_speaker,
+                "average_dialectness_level": sum(dialectness_level)
+                / len(dialectness_level),
+                "comment_id": comment_id,
                 "dialect_level": dialect_level,
                 "dialect": dialect_class,
                 "dialectness_level": dialectness_level,
-                "average_dialectness_level": sum(dialectness_level)
-                / len(dialectness_level),
+                "document": group_items_with_level[0]["document"],
+                "has_junk_annotation": has_junk_annotation,
+                "length": group_items_with_level[0]["length"],
+                "number_annotations": len(dialect_level),
+                "same_label": len(set(dialectness_level)) == 1,
                 "same_polarity": all([s == 0 for s in dialectness_level])
                 or all([s != 0 for s in dialectness_level]),
-                "same_label": len(set(dialectness_level)) == 1,
-                "annotator_dialect": native_dialect,
-                "annotator_location": annotator_location,
-                "annotator_country_from_IP": annotator_country_from_IP,
-                "source": group_items[0]["source"],
-                "document": group_items[0]["document"],
-                "annotator_id": [group_item["AID"] for group_item in group_items],
+                "sentence": sentence,
+                "source": group_items_with_level[0]["source"],
             }
         )
 
@@ -254,43 +300,15 @@ def main():
 
     df = augment_AOC_cols(df)
 
-    # Filter samples keeping only sentences satisfying the following criteria:
-    # 1) Sentences longer than 4 tokens and shorter than 27 tokens (based on previous research)
-    # 2) Sentences with 3 annotations
-    # 3) Sentences that are not mark as junk by any of the 3 annotators
-    # 4) Sentences that are not extracted from articles' bodies
-    single_sentence_comment_df = (
-        df[
-            (df["#_tokens"] >= 5)
-            & (df["#_tokens"] <= 27)
-            & (df["#_annotations"] == 3)
-            & (~df["is_junk"])
-            & (~df["is_control_sentence"])
-        ]
-        .copy()
-        .reset_index(drop=True)
-    )
-
-    sentences = set(single_sentence_comment_df["Sentence"].tolist())
-    discarded_df = df[
-        df["Sentence"].progress_apply(lambda s: s not in sentences)
-    ].copy()
-    discarded_df["is_not_a_sentence"] = (discarded_df["#_tokens"] < 5) | (
-        discarded_df["#_tokens"] > 27
-    )
-    discarded_df["has_annotations_issue"] = discarded_df["#_annotations"] != 3
-    discarded_df.to_csv(
-        str(Path(BASE_DATASET_DIR, "AOC_discarded.tsv")), index=False, sep="\t"
-    )
-
-    annotations_df = group_annotations_by_sentence_id(single_sentence_comment_df)
-    #  Document ID can be repeated in multiple sources but referring to different documents
-    annotations_df["document"] = annotations_df.apply(
-        lambda row: f'{row["source"]}_{int(row["document"])}', axis=1
-    )
+    annotations_df = group_annotations_by_sentence_id(df)
     annotations_df.to_csv(
         str(Path(BASE_DATASET_DIR, "AOC_aggregated.tsv")), index=False, sep="\t"
     )
+
+    # Filter out samples having a junk annotation
+    annotations_df = annotations_df[~annotations_df["has_junk_annotation"]]
+
+    # TODO: Filter out samples from articles themselves?
 
     # Find the number of comments for each document in the corpus
     comments_per_document = (
@@ -304,28 +322,20 @@ def main():
         lambda d: comments_per_document[d]
     )
 
-    # (5) Make sure that the comments to the same article are within the same split
-    for source, gdf in annotations_df.groupby("source"):
-        gdf.sort_values(
-            by=["comments_per_document", "document"], inplace=True, ascending=False
-        )
+    annotations_df.sort_values(
+        by=["comments_per_document", "document"], inplace=True, ascending=False
+    )
 
-        train_df = generate_sliced_df(gdf, train_size)
-        train_df.to_csv(
-            str(Path(BASE_DATASET_DIR, f"train_{source}.tsv")), index=False, sep="\t"
-        )
+    train_df = generate_sliced_df(annotations_df, train_size)
+    train_df.to_csv(str(Path(BASE_DATASET_DIR, f"train.tsv")), index=False, sep="\t")
 
-        dev_df = generate_sliced_df(gdf, train_size + dev_size).iloc[
-            train_df.shape[0] :
-        ]
-        dev_df.to_csv(
-            str(Path(BASE_DATASET_DIR, f"dev_{source}.tsv")), index=False, sep="\t"
-        )
+    dev_df = generate_sliced_df(annotations_df, train_size + dev_size).iloc[
+        train_df.shape[0] :
+    ]
+    dev_df.to_csv(str(Path(BASE_DATASET_DIR, f"dev.tsv")), index=False, sep="\t")
 
-        test_df = gdf.iloc[train_df.shape[0] + dev_df.shape[0] :]
-        test_df.to_csv(
-            str(Path(BASE_DATASET_DIR, f"test_{source}.tsv")), index=False, sep="\t"
-        )
+    test_df = annotations_df.iloc[train_df.shape[0] + dev_df.shape[0] :]
+    test_df.to_csv(str(Path(BASE_DATASET_DIR, f"test.tsv")), index=False, sep="\t")
 
 
 if __name__ == "__main__":
