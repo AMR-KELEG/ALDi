@@ -1,63 +1,133 @@
-Feature name	ARA variant	ARZ variant	MSA	DA
+Feature name	ARA variant	ARZ variant	MSA	DA	Word order
 Present progressive	"ɸ
 Ylab (plays)"	"b-
-b-ylab"	يقول الولد الحقيقة	بيقول الولد الحقيقة
+b-ylab"	يقول الولد الحقيقة	بيقول الولد الحقيقة	VSO
 Present progressive	"ɸ
 Ylab (plays)"	"b-
-b-ylab"	يقول الولد الحقيقة	الولد بيقول الحقيقة
+b-ylab"	تقول البنت الحقيقة	بتقول البنت الحقيقة	VSO
+Present progressive	"ɸ
+Ylab (plays)"	"b-
+b-ylab"	الولد يقول الحقيقة	الولد بيقول الحقيقة	SVO
+Present progressive	"ɸ
+Ylab (plays)"	"b-
+b-ylab"	البنت تقول الحقيقة	البنت بتقول الحقيقة	SVO
 Future Morpheme	"Sawf OR s-
 S-ylab (will play)"	"H- h- (ح - ه)
-h-ylab"	سيقول الولد الحقيقة	هيقول الولد الحقيقة
+h-ylab"	سيقول الولد الحقيقة	هيقول الولد الحقيقة	VSO
 Future Morpheme	"Sawf OR s-
 S-ylab (will play)"	"H- h- (ح - ه)
-h-ylab"	سيقول الولد الحقيقة	الولد هيقول الحقيقة
+h-ylab"	ستقول البنت الحقيقة	هتقول البنت الحقيقة	VSO
 Future Morpheme	"Sawf OR s-
 S-ylab (will play)"	"H- h- (ح - ه)
-h-ylab"	سيقول الولد الحقيقة	حيقول الولد الحقيقة
+h-ylab"	الولد سيقول الحقيقة	الولد هيقول الحقيقة	SVO
 Future Morpheme	"Sawf OR s-
 S-ylab (will play)"	"H- h- (ح - ه)
-h-ylab"	سيقول الولد الحقيقة	الولد حيقول الحقيقة
+h-ylab"	البنت ستقول الحقيقة	البنت هتقول الحقيقة	SVO
+Future Morpheme	"Sawf OR s-
+S-ylab (will play)"	"H- h- (ح - ه)
+h-ylab"	سيقول الولد الحقيقة	حيقول الولد الحقيقة	VSO
+Future Morpheme	"Sawf OR s-
+S-ylab (will play)"	"H- h- (ح - ه)
+h-ylab"	ستقول البنت الحقيقة	حتقول البنت الحقيقة	VSO
+Future Morpheme	"Sawf OR s-
+S-ylab (will play)"	"H- h- (ح - ه)
+h-ylab"	سيقول الولد الحقيقة	الولد حيقول الحقيقة	SVO
+Future Morpheme	"Sawf OR s-
+S-ylab (will play)"	"H- h- (ح - ه)
+h-ylab"	البنت ستقول الحقيقة	البنت حتقول الحقيقة	SVO
 Passive formation	"Using a short diactric
 
 Loab (was played)"	"Using At or En
 
 
-At-Lab En-Lab"	قيلت الحقيقة	اتقالت الحقيقة
+At-Lab En-Lab"	قيلت الحقيقة	اتقالت الحقيقة	VO
 Passive formation	"Using a short diactric
 
 Loab (was played)"	"Using At or En
 
 
-At-Lab En-Lab"	قيلت الحقيقة	انقالت الحقيقة
+At-Lab En-Lab"	الحقيقة قيلت	الحقيقة اتقالت	OV
+Passive formation	"Using a short diactric
+
+Loab (was played)"	"Using At or En
+
+
+At-Lab En-Lab"	قيلت الحقيقة	انقالت الحقيقة	VO
+Passive formation	"Using a short diactric
+
+Loab (was played)"	"Using At or En
+
+
+At-Lab En-Lab"	الحقيقة قيلت	الحقيقة انقالت	VO
 Negation	"Lam
 
 Lam ylab (didn’t play)"	"Ma- + -sh
 
-Ma-lab-sh"	لا يقول الولد الحقيقة	مبيقولش الولد الحقيقة
+Ma-lab-sh"	لا يقول الولد الحقيقة	مبيقلش الولد الحقيقة	VSO
 Negation	"Lam
 
 Lam ylab (didn’t play)"	"Ma- + -sh
 
-Ma-lab-sh"	لا يقول الولد الحقيقة	الولد مبيقولش الحقيقة
+Ma-lab-sh"	لا يقول الولد الحقيقة	مبيقولش الولد الحقيقة	VSO
+Negation	"Lam
+
+Lam ylab (didn’t play)"	"Ma- + -sh
+
+Ma-lab-sh"	لا تقول البنت الحقيقة	مبتقلش البنت الحقيقة	VSO
+Negation	"Lam
+
+Lam ylab (didn’t play)"	"Ma- + -sh
+
+Ma-lab-sh"	لا تقول البنت الحقيقة	مبتقولش البنت الحقيقة	VSO
+Negation	"Lam
+
+Lam ylab (didn’t play)"	"Ma- + -sh
+
+Ma-lab-sh"	الولد لا يقول الحقيقة	الولد مبيقلش الحقيقة	SVO
+Negation	"Lam
+
+Lam ylab (didn’t play)"	"Ma- + -sh
+
+Ma-lab-sh"	الولد لا يقول الحقيقة	الولد مبيقولش الحقيقة	SVO
 Negated imperative	"La
 
 La tlab (Don’t play - masc)"	"Ma - + -sh
 
-Ma-tlab-sh"	لا تقل الحقيقة	متقولش الحقيقة
-Merging verbs and prepositional phrases (to+personal pronoun)	Ylab laha (plays for her)	Ylablaha		
-Replacing short vowels with long ones in imperative form of hollow roots (ones having a vowel in the middle of the root) 	Ql (Say)	Qol	قل الحقيقة	قول الحقيقة
+Ma-tlab-sh"	لا تقل الحقيقة	متقولش الحقيقة	VSO
+Negated imperative	"La
+
+La tlab (Don’t play - masc)"	"Ma - + -sh
+
+Ma-tlab-sh"	لا تقل الحقيقة	ماتقولش الحقيقة	VSO
+Negated imperative	"La
+
+La tlab (Don’t play - masc)"	"Ma - + -sh
+
+Ma-tlab-sh"	لا تقولي الحقيقة	متقوليش الحقيقة	VSO
+Negated imperative	"La
+
+La tlab (Don’t play - masc)"	"Ma - + -sh
+
+Ma-tlab-sh"	لا تقولي الحقيقة	ماتقوليش الحقيقة	VSO
+Merging verbs and prepositional phrases (to+personal pronoun)	Ylab laha (plays for her)	Ylablaha			
+Replacing short vowels with long ones in imperative form of hollow roots (ones having a vowel in the middle of the root) 	Ql (Say)	Qol	قل الحقيقة	قول الحقيقة	VSO
+Replacing short vowels with long ones in imperative form of hollow roots (ones having a vowel in the middle of the root) 	Ql (Say)	Qol	قلي الحقيقة	قولي الحقيقة	VSO
 "Letter substitution because of phonological differences
-(9 rules in the paper)"				
+(9 rules in the paper)"			قال الولد الحقيقة	الولد ال الحئيئة	
 "Missing Dual form in verb inflection
 (Not part of the paper)"	Ylab-an	"Ylab-o
 
 How to control for having a single feature in a sentence?
-For instance: avoiding the progressive suffix b-"		
+For instance: avoiding the progressive suffix b-"			
 "Word Order preference
 (Not part of the paper)"	"VSO or SVO
 Ylab Amr "	"SVO
-Amr Ylab"	قال الولد الحقيقة	الولد قال الحقيقة
-Dropping some articles and preposition in some syntactic constructs.	TODO			
+Amr Ylab"	قال الولد الحقيقة	الولد قال الحقيقة	
+"Word Order preference
+(Not part of the paper)"	"VSO or SVO
+Ylab Amr "	"SVO
+Amr Ylab"	قالت البنت الحقيقة	البنت قالت الحقيقة	
+Dropping some articles and preposition in some syntactic constructs.	TODO				
 Single form of Five nouns	"Abu - Abe - Aba
-Nom - Gen - Acc"	Abu		
-Common use of masculine plural or singular noun forms instead dual and feminine plural.	TODO			
+Nom - Gen - Acc"	Abu			
+Common use of masculine plural or singular noun forms instead dual and feminine plural.	TODO				
