@@ -87,13 +87,8 @@ def load_DIAL2MSA_dataset(dialect_abbrev):
 
     # TODO: Try to keep translations of the same tweet in the same split
 
-    train_split_percentage = 0.9
-    n_train_samples = round(train_split_percentage * df.shape[0])
-    df[["DA_text", "MSA_text"]][:n_train_samples].to_csv(
-        Path(BASE_DATASET_DIR, f"train_{dialect_abbrev}.tsv"), index=False, sep="\t"
-    )
-    df[["DA_text", "MSA_text"]][n_train_samples:].to_csv(
-        Path(BASE_DATASET_DIR, f"test_{dialect_abbrev}.tsv"), index=False, sep="\t"
+    df[["DA_text", "MSA_text"]].to_csv(
+        Path(BASE_DATASET_DIR, f"{dialect_abbrev}.tsv"), index=False, sep="\t"
     )
 
 

@@ -9,23 +9,21 @@ def load_contrastive_pairs():
     return df[["Feature name", "MSA_text", "DA_text"]].dropna()
 
 
-def load_DIAL2MSA(split, dialect):
-    assert split in ["train", "test"]
+def load_DIAL2MSA(dialect):
     assert dialect in ["EGY", "MGR", "LEV", "GLF"]
 
     BASE_DIR = "data/DIAL2MSA/"
-    filename = str(Path(BASE_DIR, f"{split}_{dialect}.tsv"))
+    filename = str(Path(BASE_DIR, f"{dialect}.tsv"))
 
     df = pd.read_csv(filename, sep="\t")
     return df
 
 
-def load_BIBLE(split, dialect):
-    assert split in ["train", "test"]
+def load_BIBLE(dialect):
     assert dialect in ["tn", "ma"]
 
     BASE_DIR = "data/Bible/"
-    filename = str(Path(BASE_DIR, f"{split}.tsv"))
+    filename = str(Path(BASE_DIR, f"bible.tsv"))
 
     df = pd.read_csv(filename, sep="\t")
     df.rename(columns={"msa": "MSA_text", dialect: "DA_text"}, inplace=True)
