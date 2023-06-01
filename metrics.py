@@ -209,6 +209,6 @@ class DIMetric:
         self.di_model = DIDModel6.pretrained()
 
     def compute_dialectness_score(self, text):
-        dialect = self.di_model.predict(text)[0].top
+        dialect = self.di_model.predict([text])[0].top
         # TODO: Use the scores of the DI model?
         return 0 if dialect == "MSA" else 1
