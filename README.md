@@ -12,3 +12,6 @@
 ├── run_dialectness_score_experiment.py: Evalute an ALDi method on one of the selected corpora
 └── requirements.txt: List of pythonckages
 ```
+
+## Installation
+For using the DI model of `camel_tools`, run `camel_data -i defaults`

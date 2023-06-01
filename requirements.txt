@@ -4,6 +4,7 @@ transformers[torch]
 evaluate
 scikit-learn
 tensorboardX
+camel_tools
 
 # Data
 pandas
