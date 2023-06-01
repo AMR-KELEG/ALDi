@@ -6,6 +6,7 @@ from metrics import (
     LexiconOverlapMetric,
     RegressionBERTMetric,
     LIBERTMetric,
+    DIMetric,
 )
 from pathlib import Path
 from tqdm import tqdm
@@ -23,6 +24,7 @@ DIALECTNESS_METRIC = {
     "lexicon": LexiconOverlapMetric,
     "regression": RegressionBERTMetric,
     "tagging": LIBERTMetric,
+    "di": DIMetric,
 }
 
 
@@ -83,7 +85,7 @@ def main():
 
     if args.metric == "lexicon":
         metric = DIALECTNESS_METRIC[args.metric](lexicon_source=args.lexicon_source)
-    elif args.metric == "backtranslation":
+    elif args.metric in ["backtranslation", "di"]:
         metric = DIALECTNESS_METRIC[args.metric]()
     else:
         metric = DIALECTNESS_METRIC[args.metric](
