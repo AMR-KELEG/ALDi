@@ -12,6 +12,7 @@ from transformers import (
     BertForSequenceClassification,
     AutoModelForTokenClassification,
 )
+from camel_tools.dialectid import DIDModel6
 
 
 class DialectnessLevelMetric(ABC):
@@ -201,3 +202,13 @@ class LIBERTMetric:
             return n_da_tokens / (n_msa_tokens + n_da_tokens)
         else:
             return 0
+
+
+class DIMetric:
+    def __init__(self):
+        self.di_model = DIDModel6.pretrained()
+
+    def compute_dialectness_score(self, text):
+        dialect = self.di_model.predict(text)[0].top
+        # TODO: Use the scores of the DI model?
+        return 0 if dialect == "MSA" else 1
