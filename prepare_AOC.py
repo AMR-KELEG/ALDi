@@ -40,7 +40,16 @@ def download_AOC():
 def explode_AOC():
     """Explode HIT annotation rows into single annotation ones."""
 
-    df = pd.read_csv(RAW_DATASET_FILE, sep="\t", on_bad_lines="skip", low_memory=False)
+    # Loading the dataset using pandas causes issues
+    # TODO: Is that a reason of " within some lines?
+    with open(RAW_DATASET_FILE, "r") as f:
+        lines = [l.strip() for l in f]
+
+    fields = [l.split("\t") for l in tqdm(lines)]
+    assert len(set([len(f) == 100 for f in fields]))
+
+    df = pd.DataFrame(data=fields[1:], columns=fields[0])
+
     # Columns repeated 12 times per HIT
     columns = ["Sentence", "DClass", "DLevel", "source", "document", "part", "segment"]
     dfs = []
