@@ -117,6 +117,28 @@ def explode_AOC():
         lambda s: str(s).endswith("_a")
     )
 
+    # Make sure samples with Level set to "msa" or "junk" do not have a dialect label
+    for level_label in ["msa", "junk"]:
+        assert sorted(
+            [
+                str(v)
+                for v in concat_df.loc[concat_df["DLevel"] == level_label, "DClass"]
+                .unique()
+                .tolist()
+            ]
+        ) == [
+            "N/A",
+            "prompt",
+        ]
+
+        # Assign "level_label" as the dialect
+        concat_df.loc[concat_df["DLevel"] == level_label, "DClass"] = level_label
+
+    # Replace "null" and "prompt" values in labels with "missing"
+    MISSING_LABEL = "missing"
+    for column in ["DClass", "DLevel"]:
+        concat_df.loc[concat_df[column].isin(["prompt", "N/A"]), column] = MISSING_LABEL
+
     return concat_df
 
 
@@ -141,6 +163,8 @@ def augment_AOC_cols(df):
     df["document"] = df["document"].apply(
         lambda d: int(d) if str(d) != "nan" else "nan"
     )
+
+    # Generate an ID for each comment as the source, document ID, and sentence ID
     df["COMMENT_ID"] = df.apply(
         lambda row: f"{row['source']}_{row['document']}_{row['SENTENCE_ID']}", axis=1
     )
@@ -178,83 +202,63 @@ def group_annotations_by_sentence_id(df):
         sentence = group_items[0]["Sentence"]
         comment_id = group_items[0]["COMMENT_ID"]
 
-        dialect_level = [
-            None
-            if str(group_item["DLevel"]) in ["nan", "prompt"]
-            else str(group_item["DLevel"])
-            for group_item in group_items
-        ]
+        dialect_level = [str(group_item["DLevel"]) for group_item in group_items]
 
-        # Ignore annotations with missing dialect level
-        group_items_with_level = [
-            item for item, level in zip(group_items, dialect_level) if level
-        ]
-
-        dialect_level = [
-            None
-            if str(group_item["DLevel"]) in ["nan", "prompt"]
-            else str(group_item["DLevel"])
-            for group_item in group_items_with_level
-        ]
-        dialect_class = [
-            group_item["DClass"]
-            if str(group_item["DClass"]) not in ["nan", "prompt"]
-            else group_item["DLevel"]
-            if str(group_item["DLevel"]) in ["msa", "junk"]
-            else None
-            for group_item in group_items_with_level
-        ]
+        dialect_class = [group_item["DClass"] for group_item in group_items]
 
         native_dialect = [
-            str(group_item["native_dialect"]) for group_item in group_items_with_level
+            str(group_item["native_dialect"]) for group_item in group_items
         ]
         native_arabic_speaker = [
-            str(group_item["native_arabic"]) for group_item in group_items_with_level
+            str(group_item["native_arabic"]) for group_item in group_items
         ]
-        annotator_residence = [
-            group_item["country_live"] for group_item in group_items_with_level
-        ]
+        annotator_residence = [group_item["country_live"] for group_item in group_items]
         annotator_city_from_IP = [
-            group_item["WorkerCity"] for group_item in group_items_with_level
+            group_item["WorkerCity"] for group_item in group_items
         ]
         annotator_country_from_IP = [
-            group_item["WorkerCountry"] for group_item in group_items_with_level
+            group_item["WorkerCountry"] for group_item in group_items
         ]
 
         dialectness_level = [
-            group_item["dialectness_level"] for group_item in group_items_with_level
+            group_item["dialectness_level"] for group_item in group_items
+        ]
+        non_nan_dialectness_level = [
+            l for l in dialectness_level if l in [0, 1 / 3, 2 / 3, 1]
         ]
 
         has_junk_annotation = "junk" in dialect_level
-
-        if not dialectness_level:
-            continue
 
         annotations.append(
             {
                 "annotator_city_from_IP": annotator_city_from_IP,
                 "annotator_country_from_IP": annotator_country_from_IP,
                 "annotator_dialect": native_dialect,
-                "annotator_id": [
-                    group_item["AID"] for group_item in group_items_with_level
-                ],
+                "annotator_id": [group_item["AID"] for group_item in group_items],
                 "annotator_residence": annotator_residence,
                 "annotator_native_arabic_speaker": native_arabic_speaker,
-                "average_dialectness_level": sum(dialectness_level)
-                / len(dialectness_level),
+                # TODO: Fix this!
+                "average_dialectness_level": (
+                    sum(non_nan_dialectness_level) / len(non_nan_dialectness_level)
+                )
+                if non_nan_dialectness_level
+                else None,
                 "comment_id": comment_id,
                 "dialect_level": dialect_level,
                 "dialect": dialect_class,
                 "dialectness_level": dialectness_level,
-                "document": group_items_with_level[0]["document"],
-                "has_junk_annotation": has_junk_annotation,
-                "length": group_items_with_level[0]["length"],
+                "document": group_items[0]["document"],
+                "ratio_junk_or_missing": sum(
+                    [l in ["missing", "junk"] for l in dialect_level]
+                )
+                / len(dialect_level),
+                "length": group_items[0]["length"],
                 "number_annotations": len(dialect_level),
                 "same_label": len(set(dialectness_level)) == 1,
                 "same_polarity": all([s == 0 for s in dialectness_level])
                 or all([s != 0 for s in dialectness_level]),
                 "sentence": sentence,
-                "source": group_items_with_level[0]["source"],
+                "source": group_items[0]["source"],
             }
         )
 
@@ -305,19 +309,30 @@ def main():
     download_AOC()
 
     df = explode_AOC()
-    df.to_csv(str(Path(BASE_DATASET_DIR, "AOC_exploded.tsv")), index=False, sep="\t")
+    df.to_csv(str(Path(BASE_DATASET_DIR, "1_AOC_exploded.tsv")), index=False, sep="\t")
 
     df = augment_AOC_cols(df)
+    df.to_csv(str(Path(BASE_DATASET_DIR, "2_AOC_augmented.tsv")), index=False, sep="\t")
 
     annotations_df = group_annotations_by_sentence_id(df)
     annotations_df.to_csv(
-        str(Path(BASE_DATASET_DIR, "AOC_aggregated.tsv")), index=False, sep="\t"
+        str(Path(BASE_DATASET_DIR, "3_AOC_aggregated.tsv")), index=False, sep="\t"
     )
 
-    # Filter out samples having a junk annotation
-    annotations_df = annotations_df[~annotations_df["has_junk_annotation"]]
+    # Filter out samples having majority of dialectness level annotations as junk or missing
+    annotations_df[annotations_df["ratio_junk_or_missing"] >= 2 / 3].to_csv(
+        str(Path(BASE_DATASET_DIR, "4a_AOC_aggregated_junk_samples.tsv")),
+        index=False,
+        sep="\t",
+    )
 
-    # TODO: Filter out samples from articles themselves?
+    annotations_df = annotations_df[annotations_df["ratio_junk_or_missing"] < 2 / 3]
+
+    annotations_df.to_csv(
+        str(Path(BASE_DATASET_DIR, "4_AOC_aggregated_discard_junk_samples.tsv")),
+        index=False,
+        sep="\t",
+    )
 
     # Find the number of comments for each document in the corpus
     comments_per_document = (
