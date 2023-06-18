@@ -5,8 +5,14 @@ from pathlib import Path
 def load_contrastive_pairs():
     """Load the dataset of contrastive DA/MSA pairs."""
     df = pd.read_csv("data/contrastive_pairs.tsv", sep="\t")
-    df.rename({"MSA": "MSA_text", "DA": "DA_text"}, axis=1, inplace=True)
-    return df[["Feature name", "MSA_text", "DA_text"]].dropna()
+    df.rename(
+        {"MSA": "MSA_text", "DA": "DA_text", "English": "English_text"},
+        axis=1,
+        inplace=True,
+    )
+    return df[
+        ["Feature name", "MSA_text", "DA_text", "Word order", "English_text"]
+    ].dropna()
 
 
 def load_DIAL2MSA(dialect):
