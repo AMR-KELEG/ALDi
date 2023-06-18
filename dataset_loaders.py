@@ -5,39 +5,45 @@ from pathlib import Path
 def load_contrastive_pairs():
     """Load the dataset of contrastive DA/MSA pairs."""
     df = pd.read_csv("data/contrastive_pairs.tsv", sep="\t")
-    df.rename({"MSA": "MSA_text", "DA": "DA_text"}, axis=1, inplace=True)
-    return df[["Feature name", "MSA_text", "DA_text"]].dropna()
+    df.rename(
+        {"MSA": "MSA_text", "DA": "DA_text", "English": "English_text"},
+        axis=1,
+        inplace=True,
+    )
+    return df[
+        ["Feature name", "MSA_text", "DA_text", "Word order", "English_text"]
+    ].dropna()
 
 
-def load_DIAL2MSA(split, dialect):
-    assert split in ["train", "test"]
+def load_DIAL2MSA(dialect):
     assert dialect in ["EGY", "MGR", "LEV", "GLF"]
 
     BASE_DIR = "data/DIAL2MSA/"
-    filename = str(Path(BASE_DIR, f"{split}_{dialect}.tsv"))
+    filename = str(Path(BASE_DIR, f"{dialect}.tsv"))
 
     df = pd.read_csv(filename, sep="\t")
     return df
 
 
-def load_BIBLE(split, dialect):
-    assert split in ["train", "test"]
+def load_BIBLE(dialect):
     assert dialect in ["tn", "ma"]
 
     BASE_DIR = "data/Bible/"
-    filename = str(Path(BASE_DIR, f"{split}.tsv"))
+    filename = str(Path(BASE_DIR, f"bible.tsv"))
 
     df = pd.read_csv(filename, sep="\t")
     df.rename(columns={"msa": "MSA_text", dialect: "DA_text"}, inplace=True)
     return df[["DA_text", "MSA_text"]]
 
 
-def load_AOC(split, source):
-    assert split in ["train", "dev", "test"]
-    assert source in ["youm7_c", "alghad_c", "alriyadh_c"]
+def load_AOC(split, source=None):
+    assert split in ["train", "test", "dev"]
+    assert source in ["youm7_c", "alghad_c", "alriyadh_c", None]
 
-    BASE_DIR = "data/AOC/"
-    filename = str(Path(BASE_DIR, f"{split}_{source}.tsv"))
+    BASE_DIR = "data/AOC"
+    filename = str(Path(BASE_DIR, f"{split}.tsv"))
+
+    # TODO: Handle only loading samples from a specific source
 
     df = pd.read_csv(filename, sep="\t")
     return df

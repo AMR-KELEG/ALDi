@@ -21,7 +21,7 @@ def download_arabench():
 
 
 def load_file(split, dialect):
-    assert dialect != ["tn", "ma", "msa"]
+    assert dialect in ["tn", "ma", "msa"]
 
     base_filename = str(Path(DATASET_DIR, f"AraBench_dataset/bible.{split}."))
     filename = base_filename + (
@@ -38,6 +38,8 @@ def main():
     tn_sentences = load_file("dev", "tn") + load_file("test", "tn")
     msa_sentences = load_file("dev", "msa") + load_file("test", "msa")
 
+    assert len(ma_sentences) == len(tn_sentences) == len(msa_sentences)
+
     bible_df = pd.DataFrame(
         {"ma": ma_sentences, "tn": tn_sentences, "msa": msa_sentences}
     )
@@ -47,15 +49,8 @@ def main():
     # Chapters numbers appear as well (Check dev.0 - line 143, 178).
 
     # Some lines have footnotes(?) starting with # that are not part of the verse (Check dev.9 - lines 11, ...)
-    train_percentage = 0.9
-    n_train_samples = round(bible_df.shape[0] * train_percentage)
 
-    bible_df.iloc[:n_train_samples].to_csv(
-        str(Path(DATASET_DIR, "train.tsv")), sep="\t", index=False
-    )
-    bible_df.iloc[n_train_samples:].to_csv(
-        str(Path(DATASET_DIR, "test.tsv")), sep="\t", index=False
-    )
+    bible_df.to_csv(str(Path(DATASET_DIR, "bible.tsv")), sep="\t", index=False)
 
 
 if __name__ == "__main__":

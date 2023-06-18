@@ -71,6 +71,7 @@ def main():
     )
     parser.add_argument(
         "-dialect_or_source",
+        default=None,
         help="The dialect/source of the dataset to load.",
     )
     parser.add_argument("-split", help="The dataset split to load.")
@@ -99,9 +100,7 @@ def main():
     elif args.dataset == "CONTRAST":
         dataset = DATASET_LOADING_FUNCTION[args.dataset]()
     else:
-        dataset = DATASET_LOADING_FUNCTION[args.dataset](
-            split=args.split, dialect=args.dialect_or_source
-        )
+        dataset = DATASET_LOADING_FUNCTION[args.dataset](dialect=args.dialect_or_source)
 
     # TODO: Change the name of the column in the original tsv file
     dataset.rename(columns={"sentence": "DA_text"}, inplace=True)
