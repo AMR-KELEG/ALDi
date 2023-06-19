@@ -1,134 +1,143 @@
-Feature name	ARA variant	ARZ variant	MSA	DA	Word order	English
-Present progressive	"ɸ
+Sample ID	Feature name	ARA variant	ARZ variant	MSA	DA	Word order	Gender	English
+1	Present progressive	"ɸ
 Ylab (plays)"	"b-
-b-ylab"	يقول الولد الحقيقة	بيقول الولد الحقيقة	VSO	The boy is saying the truth
-Present progressive	"ɸ
+b-ylab"	يقول الولد الحقيقة	بيقول الولد الحقيقة	VSO	M	The boy is saying the truth
+1	Present progressive	"ɸ
 Ylab (plays)"	"b-
-b-ylab"	تقول البنت الحقيقة	بتقول البنت الحقيقة	VSO	The girl is saying the truth
-Present progressive	"ɸ
+b-ylab"	تقول البنت الحقيقة	بتقول البنت الحقيقة	VSO	F	The girl is saying the truth
+1	Present progressive	"ɸ
 Ylab (plays)"	"b-
-b-ylab"	الولد يقول الحقيقة	الولد بيقول الحقيقة	SVO	The boy is saying the truth
-Present progressive	"ɸ
+b-ylab"	الولد يقول الحقيقة	الولد بيقول الحقيقة	SVO	M	The boy is saying the truth
+1	Present progressive	"ɸ
 Ylab (plays)"	"b-
-b-ylab"	البنت تقول الحقيقة	البنت بتقول الحقيقة	SVO	The girl is saying the truth
-Future Morpheme	"Sawf OR s-
+b-ylab"	البنت تقول الحقيقة	البنت بتقول الحقيقة	SVO	F	The girl is saying the truth
+2a	Future Morpheme	"Sawf OR s-
 S-ylab (will play)"	"H- h- (ح - ه)
-h-ylab"	سيقول الولد الحقيقة	هيقول الولد الحقيقة	VSO	The boy will say the truth
-Future Morpheme	"Sawf OR s-
+h-ylab"	سيقول الولد الحقيقة	هيقول الولد الحقيقة	VSO	M	The boy will say the truth
+2a	Future Morpheme	"Sawf OR s-
 S-ylab (will play)"	"H- h- (ح - ه)
-h-ylab"	ستقول البنت الحقيقة	هتقول البنت الحقيقة	VSO	The girl will say the truth
-Future Morpheme	"Sawf OR s-
+h-ylab"	ستقول البنت الحقيقة	هتقول البنت الحقيقة	VSO	F	The girl will say the truth
+2a	Future Morpheme	"Sawf OR s-
 S-ylab (will play)"	"H- h- (ح - ه)
-h-ylab"	الولد سيقول الحقيقة	الولد هيقول الحقيقة	SVO	The boy will say the truth
-Future Morpheme	"Sawf OR s-
+h-ylab"	الولد سيقول الحقيقة	الولد هيقول الحقيقة	SVO	M	The boy will say the truth
+2a	Future Morpheme	"Sawf OR s-
 S-ylab (will play)"	"H- h- (ح - ه)
-h-ylab"	البنت ستقول الحقيقة	البنت هتقول الحقيقة	SVO	The girl will say the truth
-Future Morpheme	"Sawf OR s-
+h-ylab"	البنت ستقول الحقيقة	البنت هتقول الحقيقة	SVO	F	The girl will say the truth
+2b	Future Morpheme	"Sawf OR s-
 S-ylab (will play)"	"H- h- (ح - ه)
-h-ylab"	سيقول الولد الحقيقة	حيقول الولد الحقيقة	VSO	The boy will say the truth
-Future Morpheme	"Sawf OR s-
+h-ylab"	سيقول الولد الحقيقة	حيقول الولد الحقيقة	VSO	M	The boy will say the truth
+2b	Future Morpheme	"Sawf OR s-
 S-ylab (will play)"	"H- h- (ح - ه)
-h-ylab"	ستقول البنت الحقيقة	حتقول البنت الحقيقة	VSO	The girl will say the truth
-Future Morpheme	"Sawf OR s-
+h-ylab"	ستقول البنت الحقيقة	حتقول البنت الحقيقة	VSO	F	The girl will say the truth
+2b	Future Morpheme	"Sawf OR s-
 S-ylab (will play)"	"H- h- (ح - ه)
-h-ylab"	سيقول الولد الحقيقة	الولد حيقول الحقيقة	SVO	The boy will say the truth
-Future Morpheme	"Sawf OR s-
+h-ylab"	سيقول الولد الحقيقة	الولد حيقول الحقيقة	SVO	M	The boy will say the truth
+2b	Future Morpheme	"Sawf OR s-
 S-ylab (will play)"	"H- h- (ح - ه)
-h-ylab"	البنت ستقول الحقيقة	البنت حتقول الحقيقة	SVO	The girl will say the truth
-Passive formation	"Using a short diactric
+h-ylab"	البنت ستقول الحقيقة	البنت حتقول الحقيقة	SVO	F	The girl will say the truth
+3a	Passive formation	"Using a short diactric
 
 Loab (was played)"	"Using At or En
 
 
-At-Lab En-Lab"	قيلت الحقيقة	اتقالت الحقيقة	VO	The truth was said
-Passive formation	"Using a short diactric
+At-Lab En-Lab"	قيلت الحقيقة	اتقالت الحقيقة	VO	B	The truth was said
+3a	Passive formation	"Using a short diactric
 
 Loab (was played)"	"Using At or En
 
 
-At-Lab En-Lab"	الحقيقة قيلت	الحقيقة اتقالت	OV	The truth was said
-Passive formation	"Using a short diactric
+At-Lab En-Lab"	الحقيقة قيلت	الحقيقة اتقالت	OV	B	The truth was said
+3b	Passive formation	"Using a short diactric
 
 Loab (was played)"	"Using At or En
 
 
-At-Lab En-Lab"	قيلت الحقيقة	انقالت الحقيقة	VO	The truth was said
-Passive formation	"Using a short diactric
+At-Lab En-Lab"	قيلت الحقيقة	انقالت الحقيقة	VO	B	The truth was said
+3b	Passive formation	"Using a short diactric
 
 Loab (was played)"	"Using At or En
 
 
-At-Lab En-Lab"	الحقيقة قيلت	الحقيقة انقالت	VO	The truth was said
-Negation	"Lam
+At-Lab En-Lab"	الحقيقة قيلت	الحقيقة انقالت	VO	B	The truth was said
+4a	Negation	"Lam
 
 Lam ylab (didn’t play)"	"Ma- + -sh
 
-Ma-lab-sh"	لا يقول الولد الحقيقة	مبيقلش الولد الحقيقة	VSO	The boy is not saying the truth
-Negation	"Lam
+Ma-lab-sh"	لا يقول الولد الحقيقة	مبيقلش الولد الحقيقة	VSO	M	The boy is not saying the truth
+4a	Negation	"Lam
 
 Lam ylab (didn’t play)"	"Ma- + -sh
 
-Ma-lab-sh"	لا تقول البنت الحقيقة	مبتقلش البنت الحقيقة	VSO	The girl is not saying the truth
-Negation	"Lam
+Ma-lab-sh"	لا تقول البنت الحقيقة	مبتقلش البنت الحقيقة	VSO	F	The girl is not saying the truth
+4a	Negation	"Lam
 
 Lam ylab (didn’t play)"	"Ma- + -sh
 
-Ma-lab-sh"	لا يقول الولد الحقيقة	مبيقولش الولد الحقيقة	VSO	The boy is not saying the truth
-Negation	"Lam
+Ma-lab-sh"	الولد لا يقول الحقيقة	الولد مبيقلش الحقيقة	SVO	M	The boy is not saying the truth
+4a	Negation	"Lam
 
 Lam ylab (didn’t play)"	"Ma- + -sh
 
-Ma-lab-sh"	لا تقول البنت الحقيقة	مبتقولش البنت الحقيقة	VSO	The girl is not saying the truth
-						
-Negation	"Lam
+Ma-lab-sh"	البنت لا تقول الحقيقة	البنت مبتقلش الحقيقة	SVO	F	The boy is not saying the truth
+4b	Negation	"Lam
 
 Lam ylab (didn’t play)"	"Ma- + -sh
 
-Ma-lab-sh"	الولد لا يقول الحقيقة	الولد مبيقلش الحقيقة	SVO	The boy is not saying the truth
-Negation	"Lam
+Ma-lab-sh"	لا يقول الولد الحقيقة	مبيقولش الولد الحقيقة	VSO	M	The boy is not saying the truth
+4b	Negation	"Lam
 
 Lam ylab (didn’t play)"	"Ma- + -sh
 
-Ma-lab-sh"	الولد لا يقول الحقيقة	الولد مبيقولش الحقيقة	SVO	The boy is not saying the truth
-Negated imperative	"La
+Ma-lab-sh"	لا تقول البنت الحقيقة	مبتقولش البنت الحقيقة	VSO	F	The girl is not saying the truth
+4b	Negation	"Lam
+
+Lam ylab (didn’t play)"	"Ma- + -sh
+
+Ma-lab-sh"	الولد لا يقول الحقيقة	الولد مبيقولش الحقيقة	SVO	M	The boy is not saying the truth
+4b	Negation	"Lam
+
+Lam ylab (didn’t play)"	"Ma- + -sh
+
+Ma-lab-sh"	البنت لا تقول الحقيقة	البنت مبتقولش الحقيقة	SVO	F	The boy is not saying the truth
+5a	Negated imperative	"La
 
 La tlab (Don’t play - masc)"	"Ma - + -sh
 
-Ma-tlab-sh"	لا تقل الحقيقة	متقولش الحقيقة	VSO	Do not say (masc.) the truth
-Negated imperative	"La
+Ma-tlab-sh"	لا تقل الحقيقة	متقولش الحقيقة	VSO	M	Do not say (masc.) the truth
+5a	Negated imperative	"La
 
 La tlab (Don’t play - masc)"	"Ma - + -sh
 
-Ma-tlab-sh"	لا تقل الحقيقة	ماتقولش الحقيقة	VSO	Do not say (masc.) the truth
-Negated imperative	"La
+Ma-tlab-sh"	لا تقولي الحقيقة	متقوليش الحقيقة	VSO	F	Do not say (fem.) the truth
+5b	Negated imperative	"La
 
 La tlab (Don’t play - masc)"	"Ma - + -sh
 
-Ma-tlab-sh"	لا تقولي الحقيقة	متقوليش الحقيقة	VSO	Do not say (fem.) the truth
-Negated imperative	"La
+Ma-tlab-sh"	لا تقل الحقيقة	ماتقولش الحقيقة	VSO	M	Do not say (masc.) the truth
+5b	Negated imperative	"La
 
 La tlab (Don’t play - masc)"	"Ma - + -sh
 
-Ma-tlab-sh"	لا تقولي الحقيقة	ماتقوليش الحقيقة	VSO	Do not say (fem.) the truth
-Merging verbs and prepositional phrases (to+personal pronoun)	Ylab laha (plays for her)	Ylablaha				
-Replacing short vowels with long ones in imperative form of hollow roots (ones having a vowel in the middle of the root) 	Ql (Say)	Qol	قل الحقيقة	قول الحقيقة	VSO	Say (masc.) the truth
-Replacing short vowels with long ones in imperative form of hollow roots (ones having a vowel in the middle of the root) 	Ql (Say)	Qol	قلي الحقيقة	قولي الحقيقة	VSO	Say (fem.) the truth
-"Letter substitution because of phonological differences
-(9 rules in the paper)"			قال الولد الحقيقة	الولد ال الحئيئة		
-"Missing Dual form in verb inflection
+Ma-tlab-sh"	لا تقولي الحقيقة	ماتقوليش الحقيقة	VSO	F	Do not say (fem.) the truth
+TODO	Replacing short vowels with long ones in imperative form of hollow roots (ones having a vowel in the middle of the root) 	Ql (Say)	Qol	قل الحقيقة	قول الحقيقة	VSO	M	Say (masc.) the truth
+TODO	Replacing short vowels with long ones in imperative form of hollow roots (ones having a vowel in the middle of the root) 	Ql (Say)	Qol	قلي الحقيقة	قولي الحقيقة	VSO	F	Say (fem.) the truth
+TODO	"Letter substitution because of phonological differences
+(9 rules in the paper)"	TODO	TODO	قال الولد الحقيقة	الولد ال الحئيئة	TODO	TODO	TODO
+TODO	"Missing Dual form in verb inflection
 (Not part of the paper)"	Ylab-an	"Ylab-o
 
 How to control for having a single feature in a sentence?
-For instance: avoiding the progressive suffix b-"				
-"Word Order preference
+For instance: avoiding the progressive suffix b-"	TODO	TODO	TODO	TODO	TODO
+TODO	"Word Order preference
 (Not part of the paper)"	"VSO or SVO
 Ylab Amr "	"SVO
-Amr Ylab"	قال الولد الحقيقة	الولد قال الحقيقة		The boy said the truth
-"Word Order preference
+Amr Ylab"	قال الولد الحقيقة	الولد قال الحقيقة	TODO	TODO	The boy said the truth
+TODO	"Word Order preference
 (Not part of the paper)"	"VSO or SVO
 Ylab Amr "	"SVO
-Amr Ylab"	قالت البنت الحقيقة	البنت قالت الحقيقة		The girl said the truth
-Dropping some articles and preposition in some syntactic constructs.	TODO					
-Single form of Five nouns	"Abu - Abe - Aba
-Nom - Gen - Acc"	Abu				
-Common use of masculine plural or singular noun forms instead dual and feminine plural.	TODO					
+Amr Ylab"	قالت البنت الحقيقة	البنت قالت الحقيقة	TODO	TODO	The girl said the truth
+TODO	Dropping some articles and preposition in some syntactic constructs.	TODO	TODO	TODO	TODO	TODO	TODO	TODO
+TODO	Single form of Five nouns	"Abu - Abe - Aba
+Nom - Gen - Acc"	Abu	TODO	TODO	TODO	TODO	TODO
+TODO	Common use of masculine plural or singular noun forms instead dual and feminine plural.	TODO	TODO	TODO	TODO	TODO	TODO	TODO
+TODO	Merging verbs and prepositional phrases (to+personal pronoun)	Ylab laha (plays for her)	Ylablaha	TODO	TODO	TODO	TODO	TODO
