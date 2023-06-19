@@ -6,12 +6,26 @@ def load_contrastive_pairs():
     """Load the dataset of contrastive DA/MSA pairs."""
     df = pd.read_csv("data/contrastive_pairs.tsv", sep="\t")
     df.rename(
-        {"MSA": "MSA_text", "DA": "DA_text", "English": "English_text"},
+        {
+            "MSA": "MSA_text",
+            "DA": "DA_text",
+            "English": "English_text",
+            "Sample ID": "ID",
+            "Gender": "Gender",
+        },
         axis=1,
         inplace=True,
     )
     return df[
-        ["Feature name", "MSA_text", "DA_text", "Word order", "English_text"]
+        [
+            "ID",
+            "Feature name",
+            "MSA_text",
+            "DA_text",
+            "Word order",
+            "Gender",
+            "English_text",
+        ]
     ].dropna()
 
 
