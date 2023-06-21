@@ -227,8 +227,6 @@ def group_annotations_by_sentence_id(df):
             l for l in dialectness_level if l in [0, 1 / 3, 2 / 3, 1]
         ]
 
-        has_junk_annotation = "junk" in dialect_level
-
         annotations.append(
             {
                 "annotator_city_from_IP": annotator_city_from_IP,
@@ -350,15 +348,37 @@ def main():
         by=["comments_per_document", "document"], inplace=True, ascending=False
     )
 
-    train_df = generate_sliced_df(annotations_df, train_size)
+    train_dfs, dev_dfs, test_dfs = [], [], []
+    # Perform the sampling for each source independently
+    for source in ["youm7", "alghad", "alriyadh"]:
+        source_annotations_df = annotations_df[
+            annotations_df["source"].isin([f"{source}_c", f"{source}_a"])
+        ]
+        # Shuffle the documents
+        source_annotations_df = source_annotations_df.sample(
+            n=source_annotations_df.shape[0], random_state=42
+        )
+
+        train_df = generate_sliced_df(source_annotations_df, train_size)
+        train_dfs.append(train_df)
+
+        dev_df = generate_sliced_df(source_annotations_df, train_size + dev_size).iloc[
+            train_df.shape[0] :
+        ]
+        dev_dfs.append(dev_df)
+
+        test_df = source_annotations_df.iloc[train_df.shape[0] + dev_df.shape[0] :]
+        test_dfs.append(test_df)
+
+    train_df = pd.concat(train_dfs)
+    dev_df = pd.concat(dev_dfs)
+    test_df = pd.concat(test_dfs)
+    assert annotations_df.shape[0] == (
+        train_df.shape[0] + dev_df.shape[0] + test_df.shape[0]
+    )
+
     train_df.to_csv(str(Path(BASE_DATASET_DIR, f"train.tsv")), index=False, sep="\t")
-
-    dev_df = generate_sliced_df(annotations_df, train_size + dev_size).iloc[
-        train_df.shape[0] :
-    ]
     dev_df.to_csv(str(Path(BASE_DATASET_DIR, f"dev.tsv")), index=False, sep="\t")
-
-    test_df = annotations_df.iloc[train_df.shape[0] + dev_df.shape[0] :]
     test_df.to_csv(str(Path(BASE_DATASET_DIR, f"test.tsv")), index=False, sep="\t")
 
 
