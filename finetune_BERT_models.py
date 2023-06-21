@@ -45,7 +45,11 @@ def transform_input(tokenizer, filenames):
 
     df = pd.concat(dfs)
     features_dict = tokenizer(
-        df["sentence"].tolist(), return_tensors="pt", padding=True
+        df["sentence"].tolist(),
+        return_tensors="pt",
+        padding=True,
+        truncation=True,
+        max_length=512,
     )
 
     # Allow the dataset not to have a label
@@ -141,18 +145,20 @@ def main():
             args.model_name, num_labels=1
         )
         # TODO: Update the training arguments
-        NO_STEPS = 5
+        NO_STEPS = 1000
+        BATCH_SIZE = 32
         training_args = TrainingArguments(
             output_dir=args.o,
             save_strategy="epoch",
             eval_steps=NO_STEPS,
+            per_device_train_batch_size=32,
             evaluation_strategy="steps",
         )
         train_dataset = AOCDataset(tokenizer, args.train)
 
         eval_dataset_filenames = glob(args.dev)
         eval_dataset = {
-            Path(filename).name.split("_")[1]: AOCDataset(tokenizer, filename)
+            Path(filename).name.split(".")[0]: AOCDataset(tokenizer, filename)
             for filename in eval_dataset_filenames
         }
         # eval_dataset = AOCDataset(tokenizer, args.dev)
