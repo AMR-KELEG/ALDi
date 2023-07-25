@@ -4,6 +4,8 @@ from dataset_loaders import load_LinCE
 from transformers import Trainer, TrainingArguments
 from transformers import AutoTokenizer, AutoModelForTokenClassification
 
+TAGS = ["ambiguous", "lang1", "lang2", "mixed", "ne", "other"]
+
 
 class LIDataset:
     def __init__(
@@ -101,17 +103,19 @@ class LIDataset:
         }
 
 
+def model_init(model_name):
+    model = AutoModelForTokenClassification.from_pretrained(
+        model_name, num_labels=len(TAGS)
+    )
+    return model
+
+
 if __name__ == "__main__":
     model_name = "UBC-NLP/MARBERT"
 
     dataset = load_LinCE("dev")
-    TAGS = ["ambiguous", "lang1", "lang2", "mixed", "ne", "other"]
 
     tokenizer = AutoTokenizer.from_pretrained(model_name)
-    model = AutoModelForTokenClassification.from_pretrained(
-        model_name, num_labels=len(TAGS)
-    )
-
     train_dataset = LIDataset(
         tokenizer=tokenizer, dataset=load_LinCE("train"), max_seq_len=512
     )
@@ -129,7 +133,7 @@ if __name__ == "__main__":
 
     # Make sure it is using the right optimization function
     trainer = Trainer(
-        model,
+        model_init=lambda: model_init(model_name),
         args=training_args,
         train_dataset=train_dataset,
         eval_dataset=eval_dataset,

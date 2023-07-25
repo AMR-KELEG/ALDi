@@ -11,8 +11,9 @@ from transformers import Trainer, TrainingArguments
 from transformers.integrations import TensorBoardCallback
 from transformers import AutoTokenizer, BertForSequenceClassification
 
-random.seed(42)
-torch.manual_seed(42)
+SEED = 42
+random.seed(SEED)
+torch.manual_seed(SEED)
 
 
 def compute_evaluation_metrics(eval_prediction):
@@ -74,6 +75,12 @@ class AOCDataset(torch.utils.data.Dataset):
 
     def __getitem__(self, idx):
         return {k: self.features_dict[k][idx, :] for k in self.input_keys}
+
+
+def model_init(model_name):
+    model = BertForSequenceClassification.from_pretrained(model_name, num_labels=1)
+
+    return model
 
 
 def main():
@@ -141,9 +148,6 @@ def main():
     tokenizer = AutoTokenizer.from_pretrained(args.model_name)
 
     if args.mode == "train":
-        model = BertForSequenceClassification.from_pretrained(
-            args.model_name, num_labels=1
-        )
         # TODO: Update the training arguments
         NO_STEPS = 1000
         BATCH_SIZE = 32
@@ -163,7 +167,7 @@ def main():
         }
         # eval_dataset = AOCDataset(tokenizer, args.dev)
         trainer = Trainer(
-            model,
+            model_init=lambda: model_init(args.model_name),
             args=training_args,
             train_dataset=train_dataset,
             eval_dataset=eval_dataset,
