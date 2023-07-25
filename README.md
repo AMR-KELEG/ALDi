@@ -15,3 +15,20 @@
 
 ## Installation
 For using the DI model of `camel_tools`, run `camel_data -i defaults`
+
+## Fine-tuning the Sentence-ALDi model
+```
+# Form the AOC-ALDi splits
+python prepare_AOC.py
+
+# Fine-tune the model
+MODEL_NAME="UBC-NLP/MARBERT"
+# Set the ID of the GPU device
+CUDA_ID="1"
+
+CUDA_VISIBLE_DEVICES="$CUDA_ID" python finetune_BERT_models.py train -d "data/AOC/train*" --dev "data/AOC/dev*"  -m "$MODEL_NAME" -o ALDi_model
+```
+
+## Technical information
+The models and experiments were run on a single Quadro RTX 8000 GPU with 48GB of VRAM.
+
