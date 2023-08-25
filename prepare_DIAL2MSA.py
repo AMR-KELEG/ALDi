@@ -97,7 +97,7 @@ def main():
     # The current solution is to open the file with LibreOffice and export it as xlsx
     download_DIAL2MSA()
 
-    for dialect in ["EGY", "MGR", "LEV", "GLF"]:
+    for dialect in ["EGY", "MGR"]:
         load_DIAL2MSA_dataset(dialect)
 
 

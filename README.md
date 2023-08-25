@@ -1,26 +1,23 @@
 # Arabic Level of Dialectness (ALDi)
 [![Pylint](https://github.com/AMR-KELEG/Arabic-Formality/actions/workflows/pylint.yml/badge.svg)](https://github.com/AMR-KELEG/Arabic-Formality/actions/workflows/pylint.yml)
 
+## Data
+
+The following scripts download the datasets from their respective sources, then applies the preprocessing steps described in the paper, generating `.tsv` data files to the `data/` directory.
 ```
-.
-├── backtranslate.py: Generate backtranslated versions of an Arabic text
-├── data/: Directory of dataset files
-├── prepare_AOC.py: Transform the AOC annotation file into single-annotation rows
-├── prepare_DIAL2MSA.py: Filter out samples with non-perfect confidence from DIAL2MSA
-├── prepare_bible.py: Merge the bible MSA/TUN/MOR translations
-├── finetune_BERT_models.py: Fine-tune a regression head on top of a BERT model and load it to make predictions on a test set
-├── run_dialectness_score_experiment.py: Evalute an ALDi method on one of the selected corpora
-└── requirements.txt: List of pythonckages
+# Create the splits for the AOC-ALDi dataset
+python prepare_AOC.py
+
+# Form parallel corpora files
+python prepare_DIAL2MSA.py
+python prepare_bible.py
 ```
 
-## Installation
+## Installation
 For using the DI model of `camel_tools`, run `camel_data -i defaults`
 
 ## Fine-tuning the Sentence-ALDi model
 ```
-# Form the AOC-ALDi splits
-python prepare_AOC.py
-
 # Fine-tune the model
 MODEL_NAME="UBC-NLP/MARBERT"
 # Set the ID of the GPU device
