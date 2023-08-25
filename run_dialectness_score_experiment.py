@@ -7,6 +7,7 @@ from metrics import (
     RegressionBERTMetric,
     LIBERTMetric,
     DIMetric,
+    DIConfidenceMetric,
 )
 from pathlib import Path
 from tqdm import tqdm
@@ -25,6 +26,7 @@ DIALECTNESS_METRIC = {
     "regression": RegressionBERTMetric,
     "tagging": LIBERTMetric,
     "di": DIMetric,
+    "di_confidence": DIConfidenceMetric,
 }
 
 
@@ -86,7 +88,7 @@ def main():
 
     if args.metric == "lexicon":
         metric = DIALECTNESS_METRIC[args.metric](lexicon_source=args.lexicon_source)
-    elif args.metric in ["backtranslation", "di"]:
+    elif args.metric in ["backtranslation", "di", "di_confidence"]:
         metric = DIALECTNESS_METRIC[args.metric]()
     else:
         metric = DIALECTNESS_METRIC[args.metric](

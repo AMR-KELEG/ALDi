@@ -226,3 +226,12 @@ class DIMetric:
         dialect = self.di_model.predict([text])[0].top
         # TODO: Use the scores of the DI model?
         return 0 if dialect == "MSA" else 1
+
+
+class DIConfidenceMetric:
+    def __init__(self):
+        self.di_model = DIDModel6.pretrained()
+
+    def compute_dialectness_score(self, text):
+        MSA_confidence_score = self.di_model.predict([text])[0].scores["MSA"]
+        return 1 - MSA_confidence_score
