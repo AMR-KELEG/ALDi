@@ -33,7 +33,23 @@ python prepare_DIAL2MSA.py
 python prepare_bible.py
 ```
 
-## Fine-tuning the Sentence-ALDi model
+* For generating the MSA lexicon used for the baseline model, download the [UN proceedings](https://conferences.unite.un.org/UNCorpus/Home/DownloadOverview) into `data/MSA_raw_corpora/`
+
+    * Create the directory:
+    ```mkdir -p data/MSA_raw_corpora/```
+    * Download the tar file parts into the directory following these urls:
+        * https://conferences.unite.un.org/UNCorpus/Home/DownloadFile?filename=UNv1.0.ar-en.tar.gz.00
+        * https://conferences.unite.un.org/UNCorpus/Home/DownloadFile?filename=UNv1.0.ar-en.tar.gz.01
+    * Extract the downloaded tar file:
+    ```cd data/MSA_raw_corpora/ && cat UNv1.0.ar-en.tar.gz.0* | tar -xzv && mv ar-en/ UN-en-ar/```
+
+## Models
+* Building the MSA lexicon baseline (generates a pkl file to `data/MSA_raw_corpora`)
+```
+python form_msa_lexicon.py form_lexicon -c UN
+```
+
+* Fine-tuning the Sentence-ALDi model
 ```
 # Fine-tune the model
 MODEL_NAME="UBC-NLP/MARBERT"

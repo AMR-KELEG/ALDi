@@ -1,5 +1,4 @@
 import os
-import re
 import pickle
 import argparse
 from tqdm import tqdm
@@ -86,12 +85,12 @@ def parse_opensubtitles_xml_to_txt():
         transform_xml_to_txt(filename, output_filename)
 
 
-def generate_lexicon(open_subtitles=False, un=False):
+def generate_lexicon(opensubtitles=False, un=False):
 
-    if open_subtitles:
+    if opensubtitles:
         file_paths = (
             Path(OUTPUT_TXT_DIR).glob("*.txt")
-            if open_subtitles
+            if opensubtitles
             else Path("data/MSA_raw_corpora/").glob("UN-en-ar/UNv1.0.ar-en.ar")
             if un
             else []
@@ -138,7 +137,7 @@ def main():
     elif "c" in args:
         un = True if args.c == "UN" else False
         opensubtitles = True if args.c == "OpenSubtitles" else False
-        generate_lexicon(un, opensubtitles)
+        generate_lexicon(opensubtitles=opensubtitles, un=un)
     else:
         parser.print_help()
 
