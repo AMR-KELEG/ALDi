@@ -1,19 +1,37 @@
 <img src="assets/ALDi_logo.svg" alt="ALDi logo">
 
+The codebase for the **ALDi: Quantifying the Arabic Level of Dialectness of Text** paper.
+
+## Dependencies
+* Create a conda env:
+```
+conda create -n ALDi python=3.9.16
+```
+
+* Activate the environment, and install the dependencies:
+```
+conda activate ALDi
+pip install -r requirements.txt
+```
+
+* For using the Dialect Identification model of `camel_tools`:
+```
+camel_data -i defaults
+```
+
 ## Data
 
 The following scripts download the datasets from their respective sources, then applies the preprocessing steps described in the paper, generating `.tsv` data files to the `data/` directory.
+* Create the splits for the AOC-ALDi dataset:
 ```
-# Create the splits for the AOC-ALDi dataset
 python prepare_AOC.py
+```
 
-# Form parallel corpora files
+* Form parallel corpora files:
+```
 python prepare_DIAL2MSA.py
 python prepare_bible.py
 ```
-
-## Installation
-For using the DI model of `camel_tools`, run `camel_data -i defaults`
 
 ## Fine-tuning the Sentence-ALDi model
 ```

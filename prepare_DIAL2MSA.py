@@ -3,7 +3,6 @@ import logging
 import zipfile
 import pandas as pd
 from pathlib import Path
-import matplotlib.pyplot as plt
 from urllib.request import urlretrieve
 
 logging.basicConfig(format="%(asctime)s - %(message)s", level=logging.INFO)
