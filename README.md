@@ -1,7 +1,5 @@
 # Arabic Level of Dialectness (ALDi)
-<img src="assets/ALDi_logo.pdf" alt="ALDi logo">
-
-[![Pylint](https://github.com/AMR-KELEG/Arabic-Formality/actions/workflows/pylint.yml/badge.svg)](https://github.com/AMR-KELEG/Arabic-Formality/actions/workflows/pylint.yml)
+<img src="assets/ALDi_logo.svg" alt="ALDi logo">
 
 ```
 .
