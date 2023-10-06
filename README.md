@@ -1,4 +1,3 @@
-# Arabic Level of Dialectness (ALDi)
 <img src="assets/ALDi_logo.svg" alt="ALDi logo">
 
 ## Data
