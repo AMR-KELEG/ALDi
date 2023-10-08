@@ -1,6 +1,8 @@
 <img src="assets/ALDi_logo.svg" alt="ALDi logo">
 
-The codebase for the **ALDi: Quantifying the Arabic Level of Dialectness of Text** paper.
+The codebase for the **ALDi: Quantifying the Arabic Level of Dialectness of Text** paper accepted to [EMNLP 2023](https://2023.emnlp.org/).
+
+Demo on :hugs: spaces: https://huggingface.co/spaces/AMR-KELEG/ALDi
 
 ## Dependencies
 * Create a conda env:
@@ -21,7 +23,7 @@ camel_data -i defaults
 
 ## Data
 
-The following scripts download the datasets from their respective sources, then applies the preprocessing steps described in the paper, generating `.tsv` data files to the `data/` directory.
+The following scripts download the datasets from their respective sources, then apply the preprocessing steps described in the paper, generating `.tsv` data files to the `data/` directory.
 * Create the splits for the AOC-ALDi dataset:
 ```
 python prepare_AOC.py
