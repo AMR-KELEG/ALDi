@@ -146,6 +146,7 @@ if __name__ == "__main__":
         save_strategy="epoch",
         eval_steps=NO_STEPS,
         evaluation_strategy="steps",
+        seed=args.seed,
     )
 
     # Make sure it is using the right optimization function

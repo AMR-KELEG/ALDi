@@ -158,6 +158,7 @@ def main():
             eval_steps=NO_STEPS,
             per_device_train_batch_size=BATCH_SIZE,
             evaluation_strategy="steps",
+            seed=args.seed,
         )
         train_dataset = AOCDataset(tokenizer, args.train)
 
