@@ -11,10 +11,6 @@ from transformers import Trainer, TrainingArguments
 from transformers.integrations import TensorBoardCallback
 from transformers import AutoTokenizer, BertForSequenceClassification
 
-SEED = 42
-random.seed(SEED)
-torch.manual_seed(SEED)
-
 
 def compute_evaluation_metrics(eval_prediction):
     """Compute RMSE metric as a callback during training.
@@ -116,6 +112,7 @@ def main():
         required=True,
         help="The output directory.",
     )
+    training_subparser.add_argument("-s", "--seed", type=int, default=42)
 
     prediction_subparser = subparsers.add_parser(
         "predict",
@@ -143,7 +140,11 @@ def main():
         required=True,
         help="The output filename.",
     )
+
     args = parser.parse_args()
+
+    random.seed(args.seed)
+    torch.manual_seed(args.seed)
 
     tokenizer = AutoTokenizer.from_pretrained(args.model_name)
 

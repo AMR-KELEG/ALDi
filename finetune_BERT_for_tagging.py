@@ -1,5 +1,7 @@
 import torch
+import random
 from torch import nn
+from argparse import ArgumentParser
 from dataset_loaders import load_LinCE
 from transformers import Trainer, TrainingArguments
 from transformers import AutoTokenizer, AutoModelForTokenClassification
@@ -111,6 +113,13 @@ def model_init(model_name):
 
 
 if __name__ == "__main__":
+    parser = ArgumentParser()
+    parser.add_argument("-s", "--seed", type=int, default=42)
+
+    args = parser.parse_args()
+    random.seed(args.seed)
+    torch.manual_seed(args.seed)
+
     model_name = "UBC-NLP/MARBERT"
 
     dataset = load_LinCE("dev")
