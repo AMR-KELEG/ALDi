@@ -9,6 +9,7 @@ the script also adds the annotator's information to each row.
 import os
 import re
 import math
+import random
 import statistics
 import pandas as pd
 from tqdm import tqdm
@@ -268,16 +269,23 @@ def generate_sliced_df(df, percentage_within):
     """Find the part of the dataset covering at least "percentage_within"% of the dataset.
 
     Args:
-        df: The dataframe to slice sorted according to the "document" column.
+        df: The dataframe to slice.
         percentage_within: The percentage of the dataframe to slice.
 
     Returns:
         A dataframe of the required percentage size.
     """
-
     n_required = int(percentage_within * df.shape[0])
-    doc_comments_counts = df["document"].value_counts().tolist()
-    doc_cum_counts = doc_comments_counts
+
+    documents = df["document"].tolist()
+    n_comments_per_document = Counter(documents)
+    sorted_doc_comments_counts = []
+    last_doc = None
+    for doc in documents:
+        if doc != last_doc:
+            sorted_doc_comments_counts.append(n_comments_per_document[doc])
+            last_doc = doc
+    doc_cum_counts = sorted_doc_comments_counts
 
     for i in range(1, len(doc_cum_counts)):
         doc_cum_counts[i] += doc_cum_counts[i - 1]
@@ -354,20 +362,31 @@ def main():
         source_annotations_df = annotations_df[
             annotations_df["source"].isin([f"{source}_c", f"{source}_a"])
         ]
-        # Shuffle the documents
-        source_annotations_df = source_annotations_df.sample(
-            n=source_annotations_df.shape[0], random_state=42
+
+        # Shuffle the documents but making sure comments to the same document are not split
+        unique_documents_ids = list(set(source_annotations_df["document"].tolist()))
+        random.seed(42)
+        random.shuffle(unique_documents_ids)
+        shuffled_docs_annotations_df = pd.concat(
+            [
+                source_annotations_df.loc[
+                    source_annotations_df["document"] == document_id, :
+                ]
+                for document_id in tqdm(unique_documents_ids)
+            ]
         )
 
-        train_df = generate_sliced_df(source_annotations_df, train_size)
+        train_df = generate_sliced_df(shuffled_docs_annotations_df, train_size)
         train_dfs.append(train_df)
 
-        dev_df = generate_sliced_df(source_annotations_df, train_size + dev_size).iloc[
-            train_df.shape[0] :
-        ]
+        dev_df = generate_sliced_df(
+            shuffled_docs_annotations_df, train_size + dev_size
+        ).iloc[train_df.shape[0] :]
         dev_dfs.append(dev_df)
 
-        test_df = source_annotations_df.iloc[train_df.shape[0] + dev_df.shape[0] :]
+        test_df = shuffled_docs_annotations_df.iloc[
+            train_df.shape[0] + dev_df.shape[0] :
+        ]
         test_dfs.append(test_df)
 
     train_df = pd.concat(train_dfs)
@@ -376,6 +395,23 @@ def main():
     assert annotations_df.shape[0] == (
         train_df.shape[0] + dev_df.shape[0] + test_df.shape[0]
     )
+
+    train_df_docs = set(
+        train_df.apply(
+            lambda row: f"{row['source']}_{row['document']}", axis=1
+        ).tolist()
+    )
+    dev_df_docs = set(
+        dev_df.apply(lambda row: f"{row['source']}_{row['document']}", axis=1).tolist()
+    )
+    test_df_docs = set(
+        test_df.apply(lambda row: f"{row['source']}_{row['document']}", axis=1).tolist()
+    )
+
+    # Make sure the document ids are not shared between the splits
+    assert train_df_docs.intersection(dev_df_docs) == set()
+    assert dev_df_docs.intersection(test_df_docs) == set()
+    assert train_df_docs.intersection(test_df_docs) == set()
 
     train_df.to_csv(str(Path(BASE_DATASET_DIR, f"train.tsv")), index=False, sep="\t")
     dev_df.to_csv(str(Path(BASE_DATASET_DIR, f"dev.tsv")), index=False, sep="\t")
