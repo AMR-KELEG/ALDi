@@ -156,7 +156,7 @@ def main():
             output_dir=args.o,
             save_strategy="epoch",
             eval_steps=NO_STEPS,
-            per_device_train_batch_size=32,
+            per_device_train_batch_size=BATCH_SIZE,
             evaluation_strategy="steps",
         )
         train_dataset = AOCDataset(tokenizer, args.train)

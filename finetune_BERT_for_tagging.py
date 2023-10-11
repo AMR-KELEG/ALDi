@@ -115,14 +115,22 @@ def model_init(model_name):
 if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument("-s", "--seed", type=int, default=42)
-
+    parser.add_argument(
+        "-model_name",
+        "-m",
+        default="UBC-NLP/MARBERT",
+        help="The model name.",
+    )
+    parser.add_argument(
+        "-o",
+        required=True,
+        help="The output directory.",
+    )
     args = parser.parse_args()
     random.seed(args.seed)
     torch.manual_seed(args.seed)
 
-    model_name = "UBC-NLP/MARBERT"
-
-    dataset = load_LinCE("dev")
+    model_name = args.model_name
 
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     train_dataset = LIDataset(
@@ -134,7 +142,7 @@ if __name__ == "__main__":
 
     NO_STEPS = 100
     training_args = TrainingArguments(
-        output_dir="BERT_for_tagging",
+        output_dir=args.o,
         save_strategy="epoch",
         eval_steps=NO_STEPS,
         evaluation_strategy="steps",
