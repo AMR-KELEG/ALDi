@@ -1,18 +1,20 @@
-# Model
-datasets
-transformers[torch]
-evaluate
-scikit-learn
-tensorboardX
-camel_tools
-
 # Data
-pandas
-editdistance
-tqdm
-xlrd
-statsmodels
+pandas==1.5.3
+xlrd==2.0.1
+beautifulsoup4==4.12.2
 
-# Analysis
-matplotlib
-beautifulsoup4
+# Models
+camel_tools==1.5.2
+torch==1.13.1
+transformers[torch]==4.26.1
+tensorboardX==2.6
+editdistance==0.6.2
+
+# Evaluation and visualization
+krippendorff==0.6.0
+statsmodels==0.13.5
+matplotlib==3.7.0
+Pillow==9.4.0
+
+# Development tools
+black==23.1.0
