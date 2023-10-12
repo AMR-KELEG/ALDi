@@ -11,6 +11,8 @@ tensorboardX==2.6
 editdistance==0.6.2
 
 # Evaluation and visualization
+krippendorff==0.6.0
+statsmodels==0.13.5
 matplotlib==3.7.0
 Pillow==9.4.0
 
