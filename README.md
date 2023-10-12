@@ -46,20 +46,48 @@ python prepare_bible.py
     * Extract the downloaded tar file:
     ```cd data/MSA_raw_corpora/ && cat UNv1.0.ar-en.tar.gz.0* | tar -xzv && mv ar-en/ UN-en-ar/```
 
+* To fine-tune the token DI model, download the "Modern Standard Arabic - Egyptian Arabic (MSA - EA)" data file from [LinCE](https://ritual.uh.edu/lince/datasets) into `data/LinCE`
+    * Create the directory:
+    ```mkdir -p data/LinCE/```
+    * Download the data zip file (named `lid_msaea.zip`) into the directory.
+    * Decompress the file into the directory: `unzip lid_msaea.zip`
+        * Expected structure:
+        ```
+        data/LinCE
+        └── lid_msaea
+            ├── dev.conll
+            ├── test.conll
+            └── train.conll
+        ```
+
 ## Models
+
+### Sentence-ALDi model
+* Fine-tuning the Sentence-ALDi model
+```
+# Set the ID of the GPU device
+CUDA_ID="1"
+
+# Fine-tune the model
+SEED="42"
+MODEL_NAME="UBC-NLP/MARBERT"
+CUDA_VISIBLE_DEVICES="$CUDA_ID" python finetune_BERT_models.py train --train data/AOC/train.tsv --dev data/AOC/dev.tsv -model_name "$MODEL_NAME" -o Sentence_ALDi -s "$SEED"
+```
+
+### Baseline models
 * Building the MSA lexicon baseline (generates a pkl file to `data/MSA_raw_corpora`)
 ```
 python form_msa_lexicon.py form_lexicon -c UN
 ```
 
-* Fine-tuning the Sentence-ALDi model
+* Fine-tuning the Token-DI model
 ```
-# Fine-tune the model
-MODEL_NAME="UBC-NLP/MARBERT"
 # Set the ID of the GPU device
 CUDA_ID="1"
 
-CUDA_VISIBLE_DEVICES="$CUDA_ID" python finetune_BERT_models.py train -d "data/AOC/train*" --dev "data/AOC/dev*"  -m "$MODEL_NAME" -o ALDi_model
+# Fine-tune the model
+SEED="42"
+CUDA_VISIBLE_DEVICES="$CUDA_ID" python finetune_BERT_for_tagging.py -s "$SEED" -o TOKEN_DI
 ```
 
 ## Technical information
