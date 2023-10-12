@@ -66,7 +66,7 @@ python prepare_bible.py
 * Fine-tuning the Sentence-ALDi model
 ```
 # Set the ID of the GPU device
-CUDA_ID="1"
+CUDA_ID="0"
 
 # Fine-tune the model
 SEED="42"
@@ -83,11 +83,141 @@ python form_msa_lexicon.py form_lexicon -c UN
 * Fine-tuning the Token-DI model
 ```
 # Set the ID of the GPU device
-CUDA_ID="1"
+CUDA_ID="0"
 
 # Fine-tune the model
 SEED="42"
 CUDA_VISIBLE_DEVICES="$CUDA_ID" python finetune_BERT_for_tagging.py -s "$SEED" -o TOKEN_DI
+```
+
+## Results
+
+- Computing RMSE on AOC-ALDi's test set (Table 6)
+```
+RESULTS_DIR="AOC_ALDi_RMSE"
+DATASET="AOC"
+SENTENCE_ALDi_HF_MODEL="AMR-KELEG/Sentence-ALDi"
+TOKEN_DI_HF_MODEL="AMR-KELEG/ALDi-Token-DI"
+CUDA_ID="0"
+
+for SEED in "30" "50"
+do
+    CUDA_VISIBLE_DEVICES="$CUDA_ID" python run_dialectness_score_experiment.py -dataset "${DATASET}" -metric regression \
+        -results_dir ${RESULTS_DIR} -split "test" -o "REGRESSION_${DATASET}_${SEED}.tsv" -model_path "${SENTENCE_ALDi_HF_MODEL}-${SEED}"
+
+    CUDA_VISIBLE_DEVICES="$CUDA_ID" python run_dialectness_score_experiment.py -dataset ${DATASET} -metric tagging \
+        -results_dir ${RESULTS_DIR} -split "test" -o "TOKEN_DI_${DATASET}_${SEED}.tsv" -model_path "${TOKEN_DI_HF_MODEL}-${SEED}"
+done
+
+CUDA_VISIBLE_DEVICES="$CUDA_ID" python run_dialectness_score_experiment.py -dataset "${DATASET}" -metric regression \
+    -results_dir ${RESULTS_DIR} -split "test" -o "REGRESSION_${DATASET}_42.tsv" -model_path "${SENTENCE_ALDi_HF_MODEL}"
+
+CUDA_VISIBLE_DEVICES="$CUDA_ID" python run_dialectness_score_experiment.py -dataset ${DATASET} -metric tagging \
+    -results_dir ${RESULTS_DIR} -split "test" -o "TOKEN_DI_${DATASET}_42.tsv" -model_path "${TOKEN_DI_HF_MODEL}"
+
+CUDA_VISIBLE_DEVICES="$CUDA_ID" python run_dialectness_score_experiment.py -dataset "${DATASET}" -metric di \
+    -results_dir ${RESULTS_DIR} -split "test" -o "SENTENCE_DI_${DATASET}.tsv"
+
+CUDA_VISIBLE_DEVICES="$CUDA_ID" python run_dialectness_score_experiment.py -dataset "${DATASET}" -metric lexicon -lexicon_source UN \
+    -results_dir ${RESULTS_DIR} -split "test" -o "LEXICON_${DATASET}.tsv"
+
+cd assets/ && python table6.py
+```
+
+- Generating box plots for parallel sentences of the Bible and DIAL2MSA (Figure 3)
+```
+RESULTS_DIR="PARALLEL_CORPORA"
+SENTENCE_ALDi_HF_MODEL="AMR-KELEG/Sentence-ALDi"
+TOKEN_DI_HF_MODEL="AMR-KELEG/ALDi-Token-DI"
+SEED=42
+CUDA_ID="0"
+
+dataset="DIAL2MSA"
+for dialect in "EGY" "MGR"
+do
+    # Sentence ALDi
+    CUDA_VISIBLE_DEVICES="$CUDA_ID" python run_dialectness_score_experiment.py -dataset ${dataset} -metric regression \
+    -results_dir ${RESULTS_DIR} -dialect_or_source $dialect -o "REGRESSION_${dataset}_${dialect}_${SEED}.tsv" \
+    -model_path "${SENTENCE_ALDi_HF_MODEL}"
+
+    # Token DI
+    CUDA_VISIBLE_DEVICES="$CUDA_ID" python run_dialectness_score_experiment.py -dataset ${dataset} -metric tagging \
+    -results_dir ${RESULTS_DIR} -dialect_or_source $dialect -o "TOKEN_DI_${dataset}_${dialect}_${SEED}.tsv" \
+    -model_path "${TOKEN_DI_HF_MODEL}"
+
+    # LEXICON
+    CUDA_VISIBLE_DEVICES="$CUDA_ID" python run_dialectness_score_experiment.py -dataset ${dataset} -metric lexicon -lexicon_source UN \
+    -results_dir ${RESULTS_DIR} -dialect_or_source $dialect -o "LEXICON_${dataset}_${dialect}.tsv"
+
+    # Sentence DI
+    CUDA_VISIBLE_DEVICES="$CUDA_ID" python run_dialectness_score_experiment.py -dataset ${dataset} -metric di \
+    -results_dir ${RESULTS_DIR} -dialect_or_source $dialect -o "SENTENCE_DI_${dataset}_${dialect}.tsv"
+done
+
+dataset="BIBLE"
+for dialect in "tn" "ma"
+do
+    # Sentence ALDi
+    CUDA_VISIBLE_DEVICES="$CUDA_ID" python run_dialectness_score_experiment.py -dataset ${dataset} -metric regression \
+    -results_dir ${RESULTS_DIR} -dialect_or_source $dialect -o "REGRESSION_${dataset}_${dialect}_${SEED}.tsv" \
+    -model_path "${SENTENCE_ALDi_HF_MODEL}"
+
+    # Token DI
+    CUDA_VISIBLE_DEVICES="$CUDA_ID" python run_dialectness_score_experiment.py -dataset ${dataset} -metric tagging \
+    -results_dir ${RESULTS_DIR} -dialect_or_source $dialect -o "TOKEN_DI_${dataset}_${dialect}_${SEED}.tsv" \
+    -model_path "${TOKEN_DI_HF_MODEL}"
+
+    # LEXICON
+    CUDA_VISIBLE_DEVICES="$CUDA_ID" python run_dialectness_score_experiment.py -dataset ${dataset} -metric lexicon -lexicon_source UN \
+    -results_dir ${RESULTS_DIR} -dialect_or_source $dialect -o "LEXICON_${dataset}_${dialect}.tsv"
+
+    # Sentence DI
+    CUDA_VISIBLE_DEVICES="$CUDA_ID" python run_dialectness_score_experiment.py -dataset ${dataset} -metric di \
+    -results_dir ${RESULTS_DIR} -dialect_or_source $dialect -o "SENTENCE_DI_${dataset}_${dialect}.tsv"
+done
+
+cd assets/ && python fig3_parallel_boxplots.py
+```
+
+- Generating the scores for the contrastive sentences
+```
+DATASET="CONTRAST"
+RESULTS_DIR="Contrastive_scores"
+SENTENCE_ALDi_HF_MODEL="AMR-KELEG/Sentence-ALDi"
+TOKEN_DI_HF_MODEL="AMR-KELEG/ALDi-Token-DI"
+CUDA_ID="0"
+
+for SEED in "30" "50"
+do
+    CUDA_VISIBLE_DEVICES="$CUDA_ID" python run_dialectness_score_experiment.py -dataset "${DATASET}" -metric regression \
+        -results_dir ${RESULTS_DIR} -o "REGRESSION_${DATASET}_${SEED}.tsv" -model_path "${SENTENCE_ALDi_HF_MODEL}-${SEED}"
+
+    CUDA_VISIBLE_DEVICES="$CUDA_ID" python run_dialectness_score_experiment.py -dataset ${DATASET} -metric tagging \
+        -results_dir ${RESULTS_DIR} -o "TOKEN_DI_${DATASET}_${SEED}.tsv" -model_path "${TOKEN_DI_HF_MODEL}-${SEED}"
+done
+
+CUDA_VISIBLE_DEVICES="$CUDA_ID" python run_dialectness_score_experiment.py -dataset "${DATASET}" -metric regression \
+    -results_dir ${RESULTS_DIR} -o "REGRESSION_${DATASET}_42.tsv" -model_path "${SENTENCE_ALDi_HF_MODEL}"
+
+CUDA_VISIBLE_DEVICES="$CUDA_ID" python run_dialectness_score_experiment.py -dataset ${DATASET} -metric tagging \
+    -results_dir ${RESULTS_DIR} -o "TOKEN_DI_${DATASET}_42.tsv" -model_path "${TOKEN_DI_HF_MODEL}"
+
+CUDA_VISIBLE_DEVICES="$CUDA_ID" python run_dialectness_score_experiment.py -dataset "${DATASET}" -metric di \
+    -results_dir ${RESULTS_DIR} -split "test" -o "SENTENCE_DI_${DATASET}.tsv"
+
+CUDA_VISIBLE_DEVICES="$CUDA_ID" python run_dialectness_score_experiment.py -dataset "${DATASET}" -metric lexicon -lexicon_source UN \
+    -results_dir ${RESULTS_DIR} -split "test" -o "LEXICON_${DATASET}.tsv"
+
+cd assets && python table7.py
+```
+
+- Generating the scatter plots for political speeches
+```
+# Scrape Alsisi's speeches
+cd analysis/speeches/ && python scrape-speeches.py && cd ../../
+
+# Perform the scoring and plot generation!
+cd assets && python fig4_speeches.py
 ```
 
 ## Technical information
