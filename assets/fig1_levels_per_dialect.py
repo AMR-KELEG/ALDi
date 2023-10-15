@@ -142,7 +142,16 @@ def plot_levels_per_dialect(df):
         w_before = w_current
     plt.ylim(0, 42000)
     plt.xlim(-0.1, x_before + w_before)
-    plt.legend(frameon=False, prop={"size": 6}, handlelength=0.8, title="ALDi")
+    handles, labels = plt.gca().get_legend_handles_labels()
+    order = [2, 1, 0, 3, 4]
+    plt.legend(
+        [handles[idx] for idx in order],
+        [labels[idx] for idx in order],
+        frameon=False,
+        prop={"size": 6},
+        handlelength=0.8,
+        title="ALDi",
+    )
     plt.xticks(ticks=xticks, labels=xlabels, rotation=90)
     plt.xlabel("Dialect label", weight="bold")
     plt.ylabel("No. of annotations", weight="bold")
