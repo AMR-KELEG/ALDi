@@ -6,6 +6,17 @@
 
 The codebase for the **ALDi: Quantifying the Arabic Level of Dialectness of Text** paper accepted to [EMNLP 2023](https://2023.emnlp.org/).
 
+## Fine-tuned models on 🤗
+
+Model | Link on 🤗
+---|---
+**Sentence-ALDi** (random seed: 42) | https://huggingface.co/AMR-KELEG/Sentence-ALDi
+Sentence-ALDi (random seed: 30) | https://huggingface.co/AMR-KELEG/Sentence-ALDi-30
+Sentence-ALDi (random seed: 50) | https://huggingface.co/AMR-KELEG/Sentence-ALDi-50
+**Token-DI** (random seed: 42) | https://huggingface.co/AMR-KELEG/ALDi-Token-DI
+Token-DI (random seed: 30) | https://huggingface.co/AMR-KELEG/ALDi-Token-DI-30
+Token-DI (random seed: 50) | https://huggingface.co/AMR-KELEG/ALDi-Token-DI-50
+
 ## Dependencies
 * Create a conda env:
 ```
