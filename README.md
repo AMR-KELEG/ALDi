@@ -235,3 +235,24 @@ cd assets && python fig4_speeches.py
 ## Technical information
 The models and experiments were run on a single Quadro RTX 8000 GPU with 48GB of VRAM.
 
+## Citation
+```
+@inproceedings{keleg-etal-2023-aldi,
+    title = "{ALD}i: Quantifying the {A}rabic Level of Dialectness of Text",
+    author = "Keleg, Amr  and
+      Goldwater, Sharon  and
+      Magdy, Walid",
+    editor = "Bouamor, Houda  and
+      Pino, Juan  and
+      Bali, Kalika",
+    booktitle = "Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing",
+    month = dec,
+    year = "2023",
+    address = "Singapore",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2023.emnlp-main.655",
+    doi = "10.18653/v1/2023.emnlp-main.655",
+    pages = "10597--10611",
+    abstract = "Transcribed speech and user-generated text in Arabic typically contain a mixture of Modern Standard Arabic (MSA), the standardized language taught in schools, and Dialectal Arabic (DA), used in daily communications. To handle this variation, previous work in Arabic NLP has focused on Dialect Identification (DI) on the sentence or the token level. However, DI treats the task as binary, whereas we argue that Arabic speakers perceive a spectrum of dialectness, which we operationalize at the sentence level as the Arabic Level of Dialectness (ALDi), a continuous linguistic variable. We introduce the AOC-ALDi dataset (derived from the AOC dataset), containing 127,835 sentences (17{\%} from news articles and 83{\%} from user comments on those articles) which are manually labeled with their level of dialectness. We provide a detailed analysis of AOC-ALDi and show that a model trained on it can effectively identify levels of dialectness on a range of other corpora (including dialects and genres not included in AOC-ALDi), providing a more nuanced picture than traditional DI systems. Through case studies, we illustrate how ALDi can reveal Arabic speakers{'} stylistic choices in different situations, a useful property for sociolinguistic analyses.",
+}
+```
