@@ -17,6 +17,59 @@ Sentence-ALDi (random seed: 50) | https://huggingface.co/AMR-KELEG/Sentence-ALDi
 Token-DI (random seed: 30) | https://huggingface.co/AMR-KELEG/ALDi-Token-DI-30
 Token-DI (random seed: 50) | https://huggingface.co/AMR-KELEG/ALDi-Token-DI-50
 
+## How to use?
+
+```
+import re
+from transformers import BertForSequenceClassification, AutoTokenizer
+
+model_name = "AMR-KELEG/Sentence-ALDi"
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = BertForSequenceClassification.from_pretrained(model_name)
+
+def preprocess_text(arabic_text):
+    """Apply preprocessing to the given Arabic text.
+
+    Args:
+        arabic_text: The Arabic text to be preprocessed.
+
+    Returns:
+        The preprocessed Arabic text.
+    """
+    no_urls = re.sub(
+        r"(https|http)?:\/\/(\w|\.|\/|\?|\=|\&|\%)*\b",
+        "",
+        arabic_text,
+        flags=re.MULTILINE,
+    )
+    no_english = re.sub(r"[a-zA-Z]", "", no_urls)
+
+    return no_english
+
+def compute_ALDi(sentence):
+    """Computes the ALDi score for the given sentences.
+
+    Args:
+        sentences: A list of Arabic sentences.
+
+    Returns:
+        A list of ALDi scores for the given sentences.
+    """
+
+    preprocessed_sentence = preprocess_text(sentence)
+
+    inputs = tokenizer(
+        preprocessed_sentence,
+        return_tensors="pt",
+        padding=True,
+    )
+    output = model(**inputs).logits.reshape(-1).tolist()[0]
+    return max(min(output, 1), 0)
+
+sentence = "حطها في الجول يا رياض"
+print("The Estimated ALDi score is", compute_ALDi(sentence))
+```
+
 ## Dependencies
 * Create a conda env:
 ```
