@@ -3,6 +3,8 @@
 [![Huggingface Space](https://img.shields.io/badge/🤗-Demo%20-yellow.svg)](https://huggingface.co/spaces/AMR-KELEG/ALDi)
 [![Data](https://img.shields.io/badge/Data_splits-AOC_ALDi-blue)](https://github.com/AMR-KELEG/ALDi/raw/master/data/AOC-ALDi.tar.gz)
 [![arXiv](https://img.shields.io/badge/arXiv-2310.13747-00ff00.svg)](https://arxiv.org/abs/2310.13747)
+[![Model on Huggingface](https://img.shields.io/badge/🤗-Model%20-yellow.svg)]([https://arxiv.org/abs/2310.13747](https://huggingface.co/AMR-KELEG/Sentence-ALDi))
+
 
 The codebase for the **ALDi: Quantifying the Arabic Level of Dialectness of Text** paper accepted to [EMNLP 2023](https://2023.emnlp.org/).
 
